@@ -1,6 +1,6 @@
 import { Route, Routes, BrowserRouter } from "react-router-dom";
 import Base from "./components/Base";
-import { Homepage } from "./pages";
+import { Homepage, About, ContactSection } from "./pages";
 // import { Service } from "./pages/Services";
 import ScrollToTop from "./components/ScrollToTop";
 
@@ -13,9 +13,9 @@ function App() {
         <Route path="/" element={<Base />}>
 
           <Route index element={<Homepage />} />
-          {/* <Route path="about-us" element={<About />} />
-          <Route path="contact-us" element={<Contact />} />
-          <Route path="services" element={<Service />} /> */}
+          <Route path="about" element={<About />} />
+          <Route path="contact" element={<ContactSection />} />
+          {/*<Route path="services" element={<Service />} /> */}
 
           {/* <Route path="*" element={<NotFound />} /> */}
 

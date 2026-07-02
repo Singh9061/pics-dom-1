@@ -1,7 +1,17 @@
-export default function Homepage(){
+import {
+    AlbumCollection,
+    HeroSection,
+    MoreAboutSection,
+    PhotographyShowcase
+} from "../pageComponents/homepage";
+
+export default function Homepage() {
     return (
         <>
-            <h3>working</h3>
+            <HeroSection />
+            <PhotographyShowcase />
+            <AlbumCollection />
+            <MoreAboutSection />
         </>
     )
 }

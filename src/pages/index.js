@@ -1,5 +1,9 @@
 import Homepage from "./Homepage";
+import About from "./About";
+import ContactSection from './ContactSection';
 
 export {
-    Homepage
+    Homepage,
+    About,
+    ContactSection
 }
