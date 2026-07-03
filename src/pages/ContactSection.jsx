@@ -36,33 +36,33 @@ const ContactSection = () => {
 
                     {/* Header Group */}
                     <div ref={headerRef} className="space-y-4">
-                        <div className="flex items-center gap-2 text-xs uppercase tracking-[0.3em] text-text-muted">
-                            <span>Available Globally</span>
+                        <div className="flex items-center gap-2 text-xs uppercase tracking-[0.3em] text-gold">
+                            <span>Documenting Worldwide</span>
                             <FiArrowDownRight size={14} className="animate-pulse" />
                         </div>
-                        <h1 className="font-serif text-4xl font-light uppercase tracking-[0.12em] sm:text-5xl md:text-6xl leading-[1.15]">
-                            Let’s Frame <br />
-                            Your Next <span className="font-semibold italic">Chapter</span>
+                        <h1 className="font-serif text-4xl font-light uppercase tracking-[0.12em] sm:text-5xl md:text-6xl leading-[1.15] text-text">
+                            Let’s Archive <br />
+                            Your Sacred <span className="font-semibold italic text-gold">Union</span>
                         </h1>
                         <p className="max-w-md text-sm text-text-muted leading-relaxed tracking-wide pt-2">
-                            Have an editorial blueprint, commercial framework, or fine-art portrait request? Reach our production team via our official digital channels.
+                            Planning a heritage destination wedding, a majestic palace celebration, or an intimate heirloom session? Reach our concierge team via our primary digital channels.
                         </p>
                     </div>
 
                     {/* Studio Coordinates List */}
-                    <div className="space-y-8 border-t border-border pt-10">
+                    <div className="space-y-8 border-t border-gold/10 pt-10">
 
                         {/* Tile 1: Location */}
                         <div
                             ref={(el) => (infoTilesRef.current[0] = el)}
                             className="group flex gap-6 items-start transition-transform duration-300 hover:translate-x-1"
                         >
-                            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-border bg-card shadow-sm">
-                                <FiMapPin size={16} />
+                            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-gold/20 bg-card shadow-xs">
+                                <FiMapPin size={16} className="text-gold" />
                             </div>
                             <div className="space-y-1 pt-1">
-                                <p className="text-[10px] font-semibold tracking-[0.25em] text-text-muted uppercase">Physical Canvas</p>
-                                <p className="font-serif text-lg tracking-wide">PICSDOM RAEBARELI</p>
+                                <p className="text-[10px] font-semibold tracking-[0.25em] text-text-muted uppercase">The Main Atelier</p>
+                                <p className="font-serif text-lg tracking-wide text-text">PICSDOM RAEBARELI</p>
                                 <p className="text-sm text-text-muted">Uttar Pradesh, India</p>
                             </div>
                         </div>
@@ -72,14 +72,14 @@ const ContactSection = () => {
                             ref={(el) => (infoTilesRef.current[1] = el)}
                             className="group flex gap-6 items-start transition-transform duration-300 hover:translate-x-1"
                         >
-                            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-border bg-card shadow-sm">
-                                <FiMail size={16} />
+                            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-gold/20 bg-card shadow-xs">
+                                <FiMail size={16} className="text-gold" />
                             </div>
                             <div className="space-y-1 pt-1">
-                                <p className="text-[10px] font-semibold tracking-[0.25em] text-text-muted uppercase">Digital Archiving</p>
+                                <p className="text-[10px] font-semibold tracking-[0.25em] text-text-muted uppercase">Legacy Consulting</p>
                                 <a
                                     href="mailto:hello@picsdom.com"
-                                    className="font-serif text-lg tracking-wide block hover:text-text-muted transition-colors underline decoration-1 underline-offset-4"
+                                    className="font-serif text-lg tracking-wide block text-text hover:text-gold transition-colors underline decoration-1 underline-offset-4 decoration-gold/30 hover:decoration-gold"
                                 >
                                     hello@picsdom.com
                                 </a>
@@ -91,13 +91,13 @@ const ContactSection = () => {
                             ref={(el) => (infoTilesRef.current[2] = el)}
                             className="group flex gap-6 items-start transition-transform duration-300 hover:translate-x-1"
                         >
-                            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-border bg-card shadow-sm">
-                                <FiMessageSquare size={16} />
+                            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-gold/20 bg-card shadow-xs">
+                                <FiMessageSquare size={16} className="text-gold" />
                             </div>
                             <div className="space-y-1 pt-1">
                                 <p className="text-[10px] font-semibold tracking-[0.25em] text-text-muted uppercase">Instant Consultation</p>
                                 <p className="text-sm text-text-muted leading-relaxed max-w-sm">
-                                    Click our interactive floating green widget positioned at the bottom right corner of your screen to communicate with our scheduling manager instantly.
+                                    Click our interactive floating green widget positioned at the bottom right corner of your screen to communicate with our studio calendar manager instantly.
                                 </p>
                             </div>
                         </div>
@@ -109,13 +109,13 @@ const ContactSection = () => {
                 <div className="lg:col-span-6 flex items-center justify-center lg:pl-6 w-full">
                     <div
                         ref={mapContainerRef}
-                        className="relative w-full aspect-4/5 max-h-162.5 overflow-hidden bg-card border border-border shadow-md"
+                        className="relative w-full aspect-4/5 max-h-162.5 overflow-hidden bg-card border border-gold/10 shadow-sm"
                     >
                         {/* Architectural Viewfinder Corners */}
-                        <div className="absolute top-6 left-6 h-3 w-3 border-t border-l border-text/30 z-20 pointer-events-none" />
-                        <div className="absolute top-6 right-6 h-3 w-3 border-t border-r border-text/30 z-20 pointer-events-none" />
-                        <div className="absolute bottom-6 left-6 h-3 w-3 border-b border-l border-text/30 z-20 pointer-events-none" />
-                        <div className="absolute bottom-6 right-6 h-3 w-3 border-b border-r border-text/30 z-20 pointer-events-none" />
+                        <div className="absolute top-6 left-6 h-3 w-3 border-t border-l border-gold/30 z-20 pointer-events-none" />
+                        <div className="absolute top-6 right-6 h-3 w-3 border-t border-r border-gold/30 z-20 pointer-events-none" />
+                        <div className="absolute bottom-6 left-6 h-3 w-3 border-b border-l border-gold/30 z-20 pointer-events-none" />
+                        <div className="absolute bottom-6 right-6 h-3 w-3 border-b border-r border-gold/30 z-20 pointer-events-none" />
 
                         {/* Main Raw Map Embed */}
                         <iframe

@@ -1,90 +1,179 @@
+import { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { FiFolder, FiArrowRight } from "react-icons/fi";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { c2_pic1, c2_pic10, c2_pic7 } from "../../Assets/picture/client2";
 
-const albums = [
+gsap.registerPlugin(ScrollTrigger);
+
+const indianWeddingAlbums = [
   {
-    id: "editorial-2026",
-    title: "Vogue & Velvet",
-    count: "24 Photographs",
-    year: "2026",
-    coverImage: "https://images.unsplash.com/photo-1509631179647-0177331693ae?q=80&w=1000&auto=format&fit=crop",
-    link: "/albums/vogue-and-velvet",
+    id: "royal-palace-union",
+    title: "The Palace Shehnai & Sindoor",
+    count: "120 Heritage Frames",
+    celebration: "Royal Baraat & Pheras",
+    coverImage: c2_pic1,
+    link: "/albums/royal-palace-union",
   },
   {
-    id: "archival-nature",
-    title: "Silent Monoliths",
-    count: "18 Photographs",
-    year: "2025",
-    coverImage: "https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?q=80&w=1000&auto=format&fit=crop",
-    link: "/albums/silent-monoliths",
+    id: "monochrome-tales",
+    title: "Intimate Jharokha Portraits",
+    count: "65 Cinematic Portraits",
+    celebration: "Regal Bridal Dressing & Details",
+    coverImage: c2_pic7,
+    link: "/albums/intimate-jharokha",
+  },
+  {
+    id: "sangeet-soiree",
+    title: "The Champagne Sangeet Beats",
+    count: "85 High-Motion Captures",
+    celebration: "Midnight Shadi Festivities",
+    coverImage: c2_pic10,
+    link: "/albums/sangeet-soiree",
   },
 ];
 
 export default function AlbumCollection() {
+  const collectionRef = useRef(null);
+  const rowsRef = useRef([]);
+
+  useEffect(() => {
+    const rows = rowsRef.current.filter(Boolean);
+    if (rows.length === 0) return;
+
+    gsap.set(rows, { y: 30, opacity: 0 });
+
+    const trigger = ScrollTrigger.batch(rows, {
+      start: "top 85%",
+      onEnter: (batch) =>
+        gsap.to(batch, {
+          opacity: 1,
+          y: 0,
+          stagger: 0.15,
+          duration: 0.8,
+          ease: "power2.out",
+          overwrite: "auto",
+        }),
+      once: true,
+    });
+
+    return () => {
+      trigger.forEach((t) => t.kill());
+    };
+  }, []);
+
+  /* ---------------- Desktop GSAP Interaction Engines ---------------- */
+  const handleMouseEnter = (e) => {
+    if (window.matchMedia("(pointer: coarse)").matches) return;
+
+    const row = e.currentTarget;
+    const image = row.querySelector(".album-cover-img");
+    const titleText = row.querySelector(".album-title");
+    const arrowCircle = row.querySelector(".album-arrow-circle");
+
+    gsap.to(image, { scale: 1.03, duration: 0.6, ease: "power2.out" });
+    gsap.to(titleText, { color: "#c5a880", duration: 0.3 });
+    gsap.to(arrowCircle, {
+      backgroundColor: "#c5a880",
+      borderColor: "#c5a880",
+      x: 4,
+      color: "#ffffff",
+      duration: 0.4,
+      ease: "power2.out"
+    });
+  };
+
+  const handleMouseLeave = (e) => {
+    if (window.matchMedia("(pointer: coarse)").matches) return;
+
+    const row = e.currentTarget;
+    const image = row.querySelector(".album-cover-img");
+    const titleText = row.querySelector(".album-title");
+    const arrowCircle = row.querySelector(".album-arrow-circle");
+
+    gsap.to(image, { scale: 1.0, duration: 0.6, ease: "power2.out" });
+    gsap.to(titleText, { color: "var(--color-text, #1c1a17)", duration: 0.3 });
+    gsap.to(arrowCircle, {
+      backgroundColor: "transparent",
+      borderColor: "rgba(197, 168, 128, 0.4)",
+      x: 0,
+      color: "var(--color-gold, #c5a880)",
+      duration: 0.4,
+      ease: "power2.out"
+    });
+  };
+
   return (
-    <section className="relative w-full py-24 px-6 md:px-12 lg:px-16 z-10 border-t border-border">
+    <section
+      ref={collectionRef}
+      className="relative w-full bg-bg py-24 px-6 md:px-12 lg:px-16 z-10 border-t border-gold/20 overflow-hidden"
+    >
       <div className="mx-auto max-w-7xl">
-        
+
         {/* Section Header */}
-        <div className="mb-16">
+        <div className="mb-20">
           <span className="text-xs uppercase tracking-[0.3em] text-text-muted block mb-3">
-            Printed & Digital Archives
+            Luxury Shaadi Heirlooms
           </span>
-          <h2 className="font-serif text-3xl font-light uppercase tracking-[0.15em] sm:text-4xl md:text-5xl">
-            Album <span className="font-semibold">Collections</span>
+          <h2 className="font-serif text-3xl font-light uppercase tracking-[0.15em] sm:text-4xl md:text-5xl text-text">
+            Heritage <span className="font-semibold italic text-gold">Archives</span>
           </h2>
         </div>
 
         {/* Landscape Album Row Layout */}
-        <div className="flex flex-col gap-12">
-          {albums.map(({ id, title, count, year, coverImage, link }) => (
-            <div 
+        <div className="flex flex-col gap-14">
+          {indianWeddingAlbums.map(({ id, title, count, celebration, coverImage, link }, index) => (
+            <div
               key={id}
-              className="group flex flex-col gap-8 border-b border-border pb-12 last:border-0 last:pb-0 md:flex-row md:items-center"
+              ref={(el) => (rowsRef.current[index] = el)}
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
+              className="group flex flex-col gap-8 border-b border-gold/20 pb-12 last:border-0 last:pb-0 md:flex-row md:items-center touch-manipulation will-change-transform"
             >
-              
-              {/* 1. Interactive Album Spine Cover Art */}
-              <Link 
+
+              {/* 1. Album Spine Cover Layer */}
+              <Link
                 to={link}
-                className="relative aspect-16/10 w-full overflow-hidden bg-card md:w-100 lg:w-125 shrink-0 border border-border shadow-md"
+                className="relative aspect-16/10 w-full overflow-hidden bg-card md:w-100 lg:w-125 shrink-0 border border-gold/10 shadow-sm"
               >
-                <img 
-                  src={coverImage} 
+                <img
+                  src={coverImage}
                   alt={title}
                   loading="lazy"
-                  className="h-full w-full object-cover transition-transform duration-700 ease-out scale-100 group-hover:scale-102"
+                  className="album-cover-img h-full w-full object-cover origin-center"
                 />
-                
-                {/* Book Jacket Glassmorphism Spine Edge Shadow */}
-                <div className="absolute top-0 left-0 h-full w-4 bg-linear-to-r from-black/20 via-black/5 to-transparent shadow-[inset_1px_0_0_rgba(255,255,255,0.1)]" />
+
+                {/* Traditional Fine-Art Premium Album Fold Line Overlay */}
+                <div className="absolute top-0 left-0 h-full w-4 bg-linear-to-r from-black/25 via-black/5 to-transparent shadow-[inset_1px_0_0_rgba(255,255,255,0.08)]" />
                 <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors duration-500" />
               </Link>
 
-              {/* 2. Album Detailed Metadata */}
+              {/* 2. Indian Wedding Detailed Meta Content */}
               <div className="flex flex-1 flex-col justify-between py-2">
                 <div>
-                  <div className="flex items-center gap-4 text-xs tracking-widest text-text-muted uppercase mb-3">
-                    <span className="flex items-center gap-1.5">
-                      <FiFolder size={12} />
+                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs tracking-widest text-text-muted uppercase mb-4">
+                    <span className="flex items-center gap-1.5 font-medium text-gold">
+                      <FiFolder size={12} className="text-gold" />
                       {count}
                     </span>
-                    <span>&bull;</span>
-                    <span>{year} Edition</span>
+                    <span className="text-gold/30 hidden sm:inline">&bull;</span>
+                    <span className="tracking-[0.18em] text-text-muted/90">{celebration}</span>
                   </div>
 
-                  <h3 className="font-serif text-2xl font-light tracking-wide md:text-3xl lg:text-4xl transition-colors duration-300 group-hover:text-text-muted">
+                  <h3 className="album-title font-serif text-2xl font-light tracking-wide text-text md:text-3xl lg:text-4xl transition-colors duration-300">
                     {title}
                   </h3>
                 </div>
 
-                {/* Inline Action Button */}
+                {/* Inline Action Trigger Layout */}
                 <div className="mt-8 md:mt-12">
                   <Link
                     to={link}
-                    className="inline-flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.2em] group/btn"
+                    className="inline-flex items-center gap-4 text-xs font-semibold uppercase tracking-[0.2em] text-text group/btn"
                   >
-                    <span>Open Archive</span>
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full border border-border bg-card transition-all duration-300 group-hover/btn:translate-x-1 group-hover/btn:border-text">
+                    <span className="group-hover/btn:text-gold transition-colors duration-300">View Love Story</span>
+                    <div className="album-arrow-circle flex h-9 w-9 items-center justify-center rounded-full border border-gold/40 bg-transparent text-gold transition-all duration-300 max-lg:group-hover/btn:translate-x-1">
                       <FiArrowRight size={14} />
                     </div>
                   </Link>

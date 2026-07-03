@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import gsap from "gsap";
-import { FiMenu, FiX, FiSun, FiMoon } from "react-icons/fi";
+import { FiMenu, FiX } from "react-icons/fi";
 
 const navLinks = [
   { name: "Home", path: "/" },
@@ -12,40 +12,22 @@ const navLinks = [
 
 export default function Navbar() {
   const location = useLocation();
-
   const [isOpen, setIsOpen] = useState(false);
-  const [theme, setTheme] = useState("dark");
 
   const navRef = useRef(null);
   const menuRef = useRef(null);
   const mobileLinksRef = useRef([]);
   const desktopLinksRef = useRef([]);
 
-  /* ---------------- Theme Configuration ---------------- */
-  useEffect(() => {
-    const saved = localStorage.getItem("theme") || "dark";
-    document.documentElement.classList.remove("light", "dark");
-    document.documentElement.classList.add(saved);
-    setTheme(saved);
-  }, []);
-
-  function toggleTheme() {
-    const next = theme === "dark" ? "light" : "dark";
-    document.documentElement.classList.remove("light", "dark");
-    document.documentElement.classList.add(next);
-    localStorage.setItem("theme", next);
-    setTheme(next);
-  }
-
   /* ---------------- GSAP Scroll Interpolation ---------------- */
   useEffect(() => {
     const handleScroll = () => {
       if (window.scrollY > 30) {
         gsap.to(navRef.current, {
-          backgroundColor: theme === "dark" ? "rgba(10, 10, 10, 0.75)" : "rgba(255, 255, 255, 0.75)",
-          borderBottomColor: "var(--color-border, rgba(128, 128, 128, 0.2))",
+          backgroundColor: "rgba(250, 250, 250, 0.85)", // Matches var(--color-bg) with crisp translucency
+          borderBottomColor: "var(--color-border)",
           backdropFilter: "blur(24px)",
-          height: "4.5rem", // Smoothly downsize header slightly on scroll
+          height: "4.5rem", // Smooth header downsize on scroll
           duration: 0.4,
           ease: "power2.out",
           overwrite: "auto"
@@ -64,11 +46,10 @@ export default function Navbar() {
     };
 
     window.addEventListener("scroll", handleScroll);
-    // Execute on initial run to anchor current scroll location state correctly
-    handleScroll();
+    handleScroll(); // Anchor initialization
 
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [theme]);
+  }, []);
 
   /* ---------------- GSAP Desktop Hover Interaction ---------------- */
   const handleMouseEnter = (index) => {
@@ -90,7 +71,6 @@ export default function Navbar() {
     if (!menuRef.current) return;
 
     if (isOpen) {
-      // Open Timeline
       const tl = gsap.timeline();
 
       tl.to(menuRef.current, {
@@ -106,7 +86,6 @@ export default function Navbar() {
         "-=0.3"
       );
     } else {
-      // Close Animation
       gsap.to(menuRef.current, {
         x: "100%",
         duration: 0.4,
@@ -120,13 +99,23 @@ export default function Navbar() {
       {/* Primary Navigation Shell */}
       <nav
         ref={navRef}
-        className="fixed inset-x-0 top-0 z-50 h-20 border-b border-transparent bg-transparent transition-colors duration-100"
+        className="fixed inset-x-0 top-0 z-50 h-20 border-b border-transparent bg-transparent"
       >
         <div className="mx-auto flex h-full max-w-7xl items-center justify-between px-5 sm:px-6 lg:px-8">
 
-          {/* Logo */}
+          {/* Brand Logo Image Asset */}
           <Link to="/" className="flex items-center group">
-            <span className="text-xl font-light uppercase tracking-[0.3em] text-text">
+            <img
+              src="/images/logo.png"
+              alt="Picsdom Studio Logo"
+              className="h-8 w-auto object-contain mix-blend-multiply transition-transform duration-300 group-hover:opacity-80"
+              onError={(e) => {
+                // Fail-safe graceful text fallback if image pathway breaks
+                e.target.style.display = 'none';
+                e.target.nextSibling.style.display = 'block';
+              }}
+            />
+            <span className="hidden text-xl font-light uppercase tracking-[0.3em] text-text">
               Pics <span className="font-semibold italic">Dom</span>
             </span>
           </Link>
@@ -157,32 +146,16 @@ export default function Navbar() {
                 </Link>
               );
             })}
-
-            {/* Utility Control */}
-            <button
-              onClick={toggleTheme}
-              aria-label="Toggle visual layout architecture theme"
-              className="flex h-9 w-9 items-center justify-center rounded-full border border-border bg-card text-text transition-transform duration-300 hover:scale-105 active:scale-95"
-            >
-              {theme === "dark" ? <FiSun size={15} /> : <FiMoon size={15} />}
-            </button>
           </div>
 
-          {/* Mobile Display Hooks */}
-          <div className="flex items-center gap-4 lg:hidden">
-            <button
-              onClick={toggleTheme}
-              className="flex h-9 w-9 items-center justify-center rounded-full border border-border bg-card text-text"
-            >
-              {theme === "dark" ? <FiSun size={15} /> : <FiMoon size={15} />}
-            </button>
-
+          {/* Mobile Actions Drawer Anchor */}
+          <div className="flex items-center lg:hidden">
             <button
               onClick={() => setIsOpen(true)}
-              className="text-text p-1"
-              aria-label="Open global directory navigation"
+              className="text-text p-1 hover:opacity-70 transition-opacity"
+              aria-label="Open directory navigation"
             >
-              <FiMenu size={22} />
+              <FiMenu size={24} />
             </button>
           </div>
         </div>
@@ -205,7 +178,7 @@ export default function Navbar() {
           </button>
         </div>
 
-        {/* Directory Structure */}
+        {/* Directory Layout Structure */}
         <div className="space-y-6 my-auto">
           {navLinks.map(({ name, path }, index) => {
             const isActive = location.pathname === path;
@@ -228,7 +201,7 @@ export default function Navbar() {
           })}
         </div>
 
-        {/* Metadata Footer */}
+        {/* Metadata Brand Footer */}
         <div className="pt-8 border-t border-border flex justify-between items-center text-[10px] uppercase tracking-[0.2em] text-text-muted">
           <span>Pics Dom Studio</span>
           <span>© 2026 Layout</span>

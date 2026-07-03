@@ -8,7 +8,6 @@ function App() {
   return (
     <BrowserRouter>
       <ScrollToTop />
-
       <Routes>
         <Route path="/" element={<Base />}>
 
