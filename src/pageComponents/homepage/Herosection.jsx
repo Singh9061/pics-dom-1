@@ -4,7 +4,7 @@ import { herosection_video } from "../../Assets/video";
 
 export default function HeroSection() {
     return (
-        <section className="relative flex h-screen w-full items-center justify-center overflow-hidden bg-black">
+        <section className="relative flex h-screen w-full items-end justify-center overflow-hidden bg-black pb-28 md:pb-36">
 
             {/* 1. Background Video Layer - Full Crisp Illumination */}
             <div className="absolute inset-0 z-0 select-none overflow-hidden">
@@ -38,11 +38,11 @@ export default function HeroSection() {
                 </div>
             </div>
 
-            {/* 4. Foreground Content (High-contrast pure white typography layout) */}
+            {/* 4. Foreground Content (Bottom-aligned pure white typography layout) */}
             <div className="relative z-30 mx-auto max-w-5xl px-6 text-center text-white">
 
                 {/* Small Tagline */}
-                <div className="mb-6 flex items-center justify-center gap-2.5 text-xs uppercase tracking-[0.3em] text-white/80 md:text-sm">
+                <div className="mb-5 flex items-center justify-center gap-2.5 text-xs uppercase tracking-[0.3em] text-white/80 md:text-sm">
                     <FiCamera className="animate-pulse text-gold" size={14} />
                     <span className="tracking-[0.25em]">Luxury Wedding & Heritage Photography</span>
                 </div>
@@ -54,13 +54,13 @@ export default function HeroSection() {
                 </h1>
 
                 {/* Subtitle Paragraph */}
-                <p className="mx-auto mt-6 max-w-2xl text-sm leading-8 tracking-wide text-white/90 font-light md:mt-8">
+                <p className="mx-auto mt-5 max-w-2xl text-sm leading-8 tracking-wide text-white/90 font-light md:mt-6">
                     Where the grandeur of sacred traditions meets raw emotion. <br className="hidden md:inline" />
                     Documenting royal palace unions, intimate elopements, and luxury celebrations worldwide.
                 </p>
 
                 {/* Action Callouts */}
-                <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row md:mt-12">
+                <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row md:mt-10">
                     {/* Primary Solid Gold Button */}
                     <Link
                         to="/gallery"
@@ -81,8 +81,7 @@ export default function HeroSection() {
             </div>
 
             {/* 5. Elegant Scroll Down Prompt */}
-            <div className="absolute bottom-8 z-30 flex animate-bounce flex-col items-center gap-1 text-white/70">
-                <span className="text-[9px] uppercase tracking-[0.25em]">Scroll</span>
+            <div className="absolute bottom-6 z-30 flex animate-bounce flex-col items-center gap-1 text-white/50">
                 <FiChevronDown size={14} />
             </div>
 

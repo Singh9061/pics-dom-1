@@ -37,7 +37,7 @@ export default function Base() {
         <Navbar />
 
         {/* Framing Main Workspace Container */}
-        <main className="flex-1 pt-20 bg-transparent text-text">
+        <main className="flex-1 bg-transparent text-text">
           <Outlet />
         </main>
 

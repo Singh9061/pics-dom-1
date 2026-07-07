@@ -46,8 +46,8 @@ export default function About() {
                             Our Origin
                         </span>
                         <h2 className="font-serif text-3xl font-light uppercase tracking-[0.12em] md:text-4xl leading-snug text-text">
-                            From cultural <br />
-                            fascination to a <br />
+                            From childhood <br />
+                            passion to a <br />
                             <span className="font-semibold text-gold">heritage vision</span>.
                         </h2>
 
@@ -58,16 +58,16 @@ export default function About() {
                     {/* Long Form Copy - Readability Optimized */}
                     <div className="lg:col-span-7 space-y-8 text-base md:text-[17px] leading-9 tracking-wide text-text-muted/90 font-light">
                         <p className="text-lg text-text font-light leading-relaxed">
-                            Indian weddings are magnificent tapestries woven from centuries of tradition, family ties, and vibrant sensory details. What began as a deep fascination with freezing these grand, transient moments—the heavy rustle of bridal silk, the crackle of the sacred fire, and the silent look shared between parents—quickly evolved into a calling.
+                            Photography has been my absolute passion since childhood. What began simply as an innate love for capturing fleeting moments gradually blossomed into a lifelong dream: to build a leading, visionary studio within the fine-art photography space.
                         </p>
                         <p>
-                            As our perspective sharpened, so did our purpose. We realized that luxury wedding photography requires more than technical mastery; it demands an intimate connection to the soul of the celebration. What started as a personal artistic journey bloomed into a dream: to build an exceptional archival house dedicated to luxury celebrations and heritage elopements globally.
+                            As our perspective sharpened, so did our artistic calling. We realized that preserving luxury weddings and cultural tapestries requires more than raw technical skill; it demands an intimate connection to the soul of every family milestone. That initial personal spark quickly evolved into a dedicated archival house built to honor heritage stories and grand elopements globally.
                         </p>
                         <p>
-                            Today, that dream thrives as <strong>Pics Dom</strong>. We stand side-by-side as a brilliant collective of 22 visual storytellers, filmmakers, and editorial professionals who share this exact artistic devotion. Together, we work seamlessly across palaces, historic destinations, and intimate settings to transform your milestones into breathtaking visual keepsakes.
+                            Today, that dream thrives as <strong>Pics Dom</strong>. I am incredibly proud to stand side-by-side with a remarkably talented team of 22 visual specialists, cinematographers, and editorial professionals who share this exact dedication. Together, our goal is to deliver high-quality, deeply intentional imagery and bespoke creative solutions that preserve life's most profound relationships.
                         </p>
                         <p className="border-t border-gold/20 pt-8 font-serif text-xl italic text-text leading-relaxed">
-                            "We believe that a wedding isn't just a single day—it is the foundation of a family's evolving legacy. We are completely committed to preserving your love story with absolute artistry, warmth, and respect."
+                            "We believe every picture tells an irreplaceable story, and we are fiercely committed to capturing those memories with elevated creativity, professionalism, and flawless attention to detail."
                         </p>
                     </div>
 
