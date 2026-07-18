@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { FiArrowUpRight } from "react-icons/fi";
 import gsap from "gsap";
@@ -6,7 +6,6 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { c1_pic1, c1_pic10 } from "../../Assets/picture/client1";
 import { c2_pic2 } from "../../Assets/picture/client2";
 
-// Register ScrollTrigger safely
 gsap.registerPlugin(ScrollTrigger);
 
 const weddingShowcaseItems = [
@@ -15,60 +14,70 @@ const weddingShowcaseItems = [
         title: "The Sacred Phere",
         category: "Vows Around Fire / Luxury Destination",
         image: c1_pic10,
-        link: "/gallery/sacred-phere",
+        link: "/gallery",
     },
     {
         id: 2,
         title: "The Royal Baraat",
         category: "Grand Entrance / High-Motion Narrative",
         image: c2_pic2,
-        link: "/gallery/royal-baraat",
+        link: "/gallery",
     },
     {
         id: 3,
         title: "The Crimson Sindoor",
         category: "Emotional Heirlooms / Intimate Portraits",
         image: c1_pic1,
-        link: "/gallery/crimson-sindoor",
+        link: "/gallery",
     },
 ];
 
 export default function PhotographyShowcase() {
     const sectionRef = useRef(null);
     const cardsRef = useRef([]);
+    const [isMobile, setIsMobile] = useState(true);
 
     useEffect(() => {
+        // Check viewport type on layout paint
+        const checkViewport = () => {
+            setIsMobile(window.innerWidth < 1024);
+        };
+        checkViewport();
+        window.addEventListener("resize", checkViewport, { passive: true });
+
         const section = sectionRef.current;
         const cards = cardsRef.current.filter(Boolean);
 
-        if (!section || cards.length === 0) return;
+        if (!section || cards.length === 0 || window.innerWidth < 1024) {
+            return () => window.removeEventListener("resize", checkViewport);
+        }
 
-        // Clean initial state to prevent layout flashes
-        gsap.set(cards, { y: 40, opacity: 0 });
+        // GSAP runs only on desktop viewports to preserve battery power and rendering threads on mobile devices
+        gsap.set(cards, { y: 35, opacity: 0 });
 
-        // Batch animation optimized for mobile viewport calculation
         const trigger = ScrollTrigger.batch(cards, {
-            start: "top 85%",
+            start: "top bottom-=100px",
             onEnter: (batch) =>
                 gsap.to(batch, {
                     opacity: 1,
                     y: 0,
-                    stagger: 0.15,
-                    duration: 0.8,
+                    stagger: 0.12,
+                    duration: 0.7,
                     ease: "power2.out",
                     overwrite: "auto",
                 }),
-            once: true // Saves mobile CPU overhead
+            once: true
         });
 
         return () => {
-            trigger.forEach(t => t.kill());
+            trigger.forEach((t) => t.kill());
+            window.removeEventListener("resize", checkViewport);
         };
-    }, []);
+    }, [isMobile]);
 
-    /* ---------------- GSAP Desktop Hover Interaction Mechanics ---------------- */
+    /* ---------------- Desktop Pointer Interactions ---------------- */
     const handleMouseEnter = (e) => {
-        if (window.matchMedia("(pointer: coarse)").matches) return;
+        if (isMobile) return;
 
         const card = e.currentTarget;
         const img = card.querySelector(".showcase-img");
@@ -77,15 +86,15 @@ export default function PhotographyShowcase() {
         const content = card.querySelector(".showcase-content");
         const badge = card.querySelector(".showcase-badge");
 
-        gsap.to(img, { scale: 1.05, duration: 0.7, ease: "power2.out" });
-        gsap.to(overlay, { opacity: 0.85, duration: 0.4, ease: "power1.out" });
-        gsap.to(frame, { borderColor: "rgba(255, 255, 255, 0.1)", duration: 0.4 });
-        gsap.to(content, { y: 0, duration: 0.5, ease: "power2.out" });
-        gsap.to(badge, { opacity: 1, scale: 1, backgroundColor: "#c5a880", borderColor: "#c5a880", duration: 0.4, ease: "back.out(1.7)" });
+        gsap.to(img, { scale: 1.04, duration: 0.6, ease: "power2.out" });
+        gsap.to(overlay, { opacity: 0.85, duration: 0.35, ease: "power1.out" });
+        gsap.to(frame, { borderColor: "rgba(255, 255, 255, 0.1)", duration: 0.35 });
+        gsap.to(content, { y: 0, duration: 0.4, ease: "power2.out" });
+        gsap.to(badge, { opacity: 1, scale: 1, backgroundColor: "#c5a880", borderColor: "#c5a880", duration: 0.35, ease: "back.out(1.5)" });
     };
 
     const handleMouseLeave = (e) => {
-        if (window.matchMedia("(pointer: coarse)").matches) return;
+        if (isMobile) return;
 
         const card = e.currentTarget;
         const img = card.querySelector(".showcase-img");
@@ -94,21 +103,21 @@ export default function PhotographyShowcase() {
         const content = card.querySelector(".showcase-content");
         const badge = card.querySelector(".showcase-badge");
 
-        gsap.to(img, { scale: 1.0, duration: 0.7, ease: "power2.out" });
-        gsap.to(overlay, { opacity: 0.7, duration: 0.4, ease: "power1.out" });
-        gsap.to(frame, { borderColor: "rgba(255, 255, 255, 0)", duration: 0.4 });
-        gsap.to(content, { y: 8, duration: 0.5, ease: "power2.out" });
-        gsap.to(badge, { opacity: 0, scale: 0.75, duration: 0.4, ease: "power2.in" });
+        gsap.to(img, { scale: 1.0, duration: 0.6, ease: "power2.out" });
+        gsap.to(overlay, { opacity: 0.7, duration: 0.35, ease: "power1.out" });
+        gsap.to(frame, { borderColor: "rgba(255, 255, 255, 0)", duration: 0.35 });
+        gsap.to(content, { y: 8, duration: 0.4, ease: "power2.out" });
+        gsap.to(badge, { opacity: 0, scale: 0.75, duration: 0.35, ease: "power2.in" });
     };
 
     return (
         <section
             ref={sectionRef}
-            className="relative w-full bg-bg px-6 py-24 md:px-12 lg:px-16 z-10 overflow-hidden border-t border-gold/10"
+            className="relative w-full bg-bg px-6 py-24 md:px-12 lg:px-16 z-10 overflow-hidden border-t border-gold/10 transform-gpu"
         >
             <div className="mx-auto max-w-7xl">
 
-                {/* Emotional Philosophy Header Block */}
+                {/* Philosophy Header Block */}
                 <div className="mb-20 max-w-4xl">
                     <span className="text-xs uppercase tracking-[0.3em] text-gold font-medium block mb-4">
                         We don’t just capture weddings — we live them with you!
@@ -120,7 +129,7 @@ export default function PhotographyShowcase() {
                     </h2>
 
                     <p className="text-sm leading-7 text-text-muted tracking-wide max-w-3xl">
-                        The unsaid glances, joyful tears, bursts of laughter, and quiet moments of love — we don’t just photograph these; we live them with you. We are visual storytellers, memory keepers, and emotional archivists who become a part of your journey. Every ritual is documented with empathy, artistry, and intention — preserving your legacy in its rawest, most authentic form.
+                        The unsaid glances, joyful tears, bursts of laughter, and quiet moments of love — we don’t just photograph these; we live them with you. We are visual storytellers, memory keepers, and emotional archivists who become a part of your journey.
                     </p>
                 </div>
 
@@ -148,15 +157,21 @@ export default function PhotographyShowcase() {
                             ref={(el) => (cardsRef.current[index] = el)}
                             onMouseEnter={handleMouseEnter}
                             onMouseLeave={handleMouseLeave}
-                            className="group relative block aspect-3/4 w-full overflow-hidden bg-card border border-gold/10 shadow-xs touch-manipulation will-change-transform"
+                            /* 
+                              Smooth hardware accelerated transition styles handled native via Tailwind on mobile screens
+                            */
+                            className={`group relative block aspect-3/4 w-full overflow-hidden bg-card border border-gold/10 shadow-md transition-all duration-700 transform-gpu will-change-transform ${isMobile ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+                                }`}
                         >
                             {/* Image Layer */}
-                            <div className="absolute inset-0 h-full w-full overflow-hidden">
+                            <div className="absolute inset-0 h-full w-full overflow-hidden pointer-events-none">
                                 <img
                                     src={image}
                                     alt={title}
-                                    loading="lazy"
-                                    className="showcase-img h-full w-full object-cover origin-center"
+                                    loading={index === 0 ? "eager" : "lazy"}
+                                    fetchpriority={index === 0 ? "high" : "auto"}
+                                    decoding="async"
+                                    className="showcase-img h-full w-full object-cover origin-center transform-gpu"
                                 />
                             </div>
 
@@ -164,7 +179,7 @@ export default function PhotographyShowcase() {
                             <div className="showcase-overlay absolute inset-0 bg-linear-to-t from-black/90 via-black/30 to-transparent opacity-70" />
 
                             {/* Card Meta Content Info */}
-                            <div className="showcase-content absolute bottom-0 inset-x-0 p-6 z-20 flex flex-col justify-end translate-y-2 lg:translate-y-2">
+                            <div className="showcase-content absolute bottom-0 inset-x-0 p-6 z-20 flex flex-col justify-end max-lg:translate-y-0 lg:translate-y-2">
                                 <span className="text-[10px] uppercase tracking-[0.25em] text-gold mb-2 block font-medium">
                                     {category}
                                 </span>

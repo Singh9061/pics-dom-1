@@ -1,19 +1,38 @@
+import { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { FiChevronDown, FiCamera } from "react-icons/fi";
 import { herosection_video } from "../../Assets/video";
 
 export default function HeroSection() {
-    return (
-        <section className="relative flex h-screen w-full items-end justify-center overflow-hidden bg-black pb-28 md:pb-36">
+    const videoRef = useRef(null);
 
-            {/* 1. Background Video Layer - Full Crisp Illumination */}
-            <div className="absolute inset-0 z-0 select-none overflow-hidden">
+    useEffect(() => {
+        // Ensuring background media plays reliably across strict mobile low-battery and power-saving profiles
+        if (videoRef.current) {
+            videoRef.current.play().catch((error) => {
+                console.log("Auto-play was speculatively deferred by browser power settings:", error);
+            });
+        }
+    }, []);
+
+    return (
+        <section className="relative flex h-screen w-full items-end justify-center overflow-hidden bg-black pb-28 md:pb-36 transform-gpu">
+
+            {/* 1. Background Video Layer - Optimized Resource Preloading Structure */}
+            <div className="absolute inset-0 z-0 select-none overflow-hidden will-change-transform">
                 <video
+                    ref={videoRef}
                     autoPlay
                     loop
                     muted
                     playsInline
-                    className="h-full w-full object-cover opacity-85"
+                    preload="auto"
+                    /* 
+                       Pro-tip: Replace this Unsplash link with a real, high-quality compressed 
+                       static cover image of your actual hero video frame to eliminate the black flash!
+                    */
+                    poster="https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1920&q=60"
+                    className="h-full w-full object-cover opacity-85 scale-102 transition-opacity duration-700 ease-out"
                     src={herosection_video}
                 />
             </div>
@@ -21,7 +40,7 @@ export default function HeroSection() {
             {/* 2. Cinematic Matte Overlay - Very Subtle Darken & Micro-Blur */}
             <div className="absolute inset-0 z-10 bg-black/20 backdrop-blur-[1px]" />
 
-            {/* 3. Camera Viewfinder Overlay Graphic (Crisp Gallery White Accent Lines) */}
+            {/* 3. Camera Viewfinder Overlay Graphic */}
             <div className="pointer-events-none absolute inset-8 z-20 border border-white/10 md:inset-16">
                 {/* Top-Left Corner */}
                 <div className="absolute top-0 left-0 h-4 w-4 border-t-2 border-l-2 border-white/60" />
@@ -38,7 +57,7 @@ export default function HeroSection() {
                 </div>
             </div>
 
-            {/* 4. Foreground Content (Bottom-aligned pure white typography layout) */}
+            {/* 4. Foreground Content */}
             <div className="relative z-30 mx-auto max-w-5xl px-6 text-center text-white">
 
                 {/* Small Tagline */}
