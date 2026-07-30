@@ -1,8 +1,14 @@
 import { useEffect, useState } from "react";
-import { createPortal } from "react-dom"; // <-- The magic tool to detach from the parent
-import { FiX } from "react-icons/fi";
+import { createPortal } from "react-dom";
+import { FiX, FiChevronLeft, FiChevronRight } from "react-icons/fi";
 
-export default function GalleryModal({ activeImage, onClose, onNext, onPrev }) {
+export default function GalleryModal({
+    activeImage,
+    onClose,
+    onNext,
+    onPrev,
+    hasMultiple
+}) {
     const [highResLoaded, setHighResLoaded] = useState(false);
 
     useEffect(() => {
@@ -11,11 +17,9 @@ export default function GalleryModal({ activeImage, onClose, onNext, onPrev }) {
 
     if (!activeImage) return null;
 
-    // The modal layout structure
     const modalContent = (
         <div
             className="fixed inset-0 z-9999 flex items-center justify-center bg-black/95 backdrop-blur-md p-4 sm:p-8 transition-opacity duration-300 ease-in-out"
-            style={{ top: 0, left: 0, right: 0, bottom: 0 }} // Bulletproof viewport framing override
             onClick={onClose}
         >
             {/* Structural Close Action Layer */}
@@ -29,18 +33,31 @@ export default function GalleryModal({ activeImage, onClose, onNext, onPrev }) {
                 </button>
             </div>
 
+            {/* Previous Arrow Button */}
+            {hasMultiple && (
+                <button
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        onPrev();
+                    }}
+                    className="absolute left-4 sm:left-8 z-10000 p-3 text-white/70 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 rounded-full backdrop-blur-md transition-all duration-300 cursor-pointer"
+                    aria-label="Previous image"
+                >
+                    <FiChevronLeft size={24} />
+                </button>
+            )}
+
             {/* Target Image Frame Content Layer */}
             <div
-                className={`relative max-w-5xl max-h-[82vh] flex flex-col items-center justify-center transition-all duration-300 ease-out ${highResLoaded ? "scale-100 opacity-100" : "scale-98 opacity-0"
+                className={`relative max-w-5xl max-h-[82vh] flex flex-col items-center justify-center transition-all duration-300 ease-out ${highResLoaded ? "scale-100 opacity-100" : "scale-[0.98] opacity-0"
                     }`}
                 onClick={(e) => e.stopPropagation()}
             >
                 <div className="relative flex items-center justify-center overflow-hidden">
-
                     {/* Loading Indicator */}
                     {!highResLoaded && (
                         <div className="absolute inset-0 flex items-center justify-center z-10 bg-black/40">
-                            <div className="h-8 w-8 animate-spin rounded-full border-2 border-gold border-t-transparent" />
+                            <div className="h-8 w-8 animate-spin rounded-full border-2 border-amber-400 border-t-transparent" />
                         </div>
                     )}
 
@@ -58,6 +75,20 @@ export default function GalleryModal({ activeImage, onClose, onNext, onPrev }) {
                     {activeImage.alt}
                 </p>
             </div>
+
+            {/* Next Arrow Button */}
+            {hasMultiple && (
+                <button
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        onNext();
+                    }}
+                    className="absolute right-4 sm:right-8 z-10000 p-3 text-white/70 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 rounded-full backdrop-blur-md transition-all duration-300 cursor-pointer"
+                    aria-label="Next image"
+                >
+                    <FiChevronRight size={24} />
+                </button>
+            )}
         </div>
     );
 

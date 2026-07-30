@@ -1,3 +1,3 @@
-import herosection_video from "./video.webm"
+import herosection_video from "./hero.webm"
 
 export { herosection_video }

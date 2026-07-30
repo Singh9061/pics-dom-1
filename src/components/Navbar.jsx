@@ -10,6 +10,25 @@ const navLinks = [
   { name: "Contact", path: "/contact" },
 ];
 
+// Custom Camera Aperture SVG Icon to match the 'O' in DOM
+const CameraApertureIcon = ({ className = "w-4 h-4" }) => (
+  <svg
+    viewBox="0 0 100 100"
+    className={className}
+    fill="currentColor"
+    aria-hidden="true"
+  >
+    <circle cx="50" cy="50" r="48" fill="none" stroke="currentColor" strokeWidth="4" />
+    <polygon points="50,15 82,34 70,72 50,85 18,66 30,28" fill="none" />
+    <path d="M50 10 L78 36 L62 38 Z" />
+    <path d="M85 38 L72 74 L58 62 Z" />
+    <path d="M72 76 L36 84 L40 68 Z" />
+    <path d="M34 84 L14 54 L30 52 Z" />
+    <path d="M14 52 L30 18 L42 30 Z" />
+    <path d="M32 18 L68 12 L56 28 Z" />
+  </svg>
+);
+
 export default function Navbar() {
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
@@ -25,10 +44,10 @@ export default function Navbar() {
 
     const handleScroll = () => {
       if (window.scrollY > 30) {
-        // Scrolled State: Transitions into your standard solid layout across all paths
+        // Scrolled State
         gsap.to(navRef.current, {
-          backgroundColor: "rgba(250, 250, 250, 0.95)", // Clean light background token balance
-          borderBottomColor: "rgba(197, 168, 128, 0.2)", // Subtle gold border
+          backgroundColor: "rgba(250, 250, 250, 0.95)",
+          borderBottomColor: "rgba(197, 168, 128, 0.2)",
           backdropFilter: "blur(24px)",
           height: "4.5rem",
           duration: 0.4,
@@ -36,7 +55,6 @@ export default function Navbar() {
           overwrite: "auto"
         });
 
-        // Ensure link wrappers return to standard text coloring when scrolled down on home
         if (isHome) {
           gsap.to(navRef.current.querySelectorAll(".nav-link-item"), { color: "var(--color-text, #1c1a17)", opacity: 0.6, duration: 0.3 });
           gsap.to(navRef.current.querySelectorAll(".nav-link-item.active-link"), { color: "var(--color-text, #1c1a17)", opacity: 1, duration: 0.3 });
@@ -46,7 +64,6 @@ export default function Navbar() {
       } else {
         // Top / Idle State
         if (isHome) {
-          // Premium Glassmorphism styling configuration exclusive to the Top of Route "/"
           gsap.to(navRef.current, {
             backgroundColor: "rgba(255, 255, 255, 0.07)",
             borderBottomColor: "rgba(255, 255, 255, 0.12)",
@@ -57,13 +74,11 @@ export default function Navbar() {
             overwrite: "auto"
           });
 
-          // Forces crisp contrast white typography layout while embedded over the dark cinematic hero video
           gsap.to(navRef.current.querySelectorAll(".nav-link-item"), { color: "#ffffff", opacity: 0.7, duration: 0.3 });
           gsap.to(navRef.current.querySelectorAll(".nav-link-item.active-link"), { color: "#ffffff", opacity: 1, duration: 0.3 });
           gsap.to(navRef.current.querySelector(".brand-text-wrapper"), { color: "#ffffff", duration: 0.3 });
           gsap.to(navRef.current.querySelector(".menu-toggle-btn"), { color: "#ffffff", duration: 0.3 });
         } else {
-          // Default normal top configuration for inside structural layout components
           gsap.to(navRef.current, {
             backgroundColor: "transparent",
             borderBottomColor: "transparent",
@@ -74,7 +89,6 @@ export default function Navbar() {
             overwrite: "auto"
           });
 
-          // Fallback reset for standard color variables
           gsap.to(navRef.current.querySelectorAll(".nav-link-item"), { color: "var(--color-text, #1c1a17)", opacity: 0.6, duration: 0.3 });
           gsap.to(navRef.current.querySelectorAll(".nav-link-item.active-link"), { color: "var(--color-text, #1c1a17)", opacity: 1, duration: 0.3 });
           gsap.to(navRef.current.querySelector(".brand-text-wrapper"), { color: "var(--color-text, #1c1a17)", duration: 0.3 });
@@ -84,7 +98,7 @@ export default function Navbar() {
     };
 
     window.addEventListener("scroll", handleScroll);
-    handleScroll(); // Trigger instantly on layout mounting
+    handleScroll();
 
     return () => window.removeEventListener("scroll", handleScroll);
   }, [location.pathname]);
@@ -141,20 +155,26 @@ export default function Navbar() {
       >
         <div className="mx-auto flex h-full max-w-7xl items-center justify-between px-5 sm:px-6 lg:px-8">
 
-          {/* Brand Logo & Dynamic text */}
-          <Link to="/" className="flex items-center group">
-            <img
-              src="/images/logo.png"
-              alt="Picsdom Studio Logo"
-              className="h-8 w-auto object-contain mix-blend-multiply transition-transform duration-300 group-hover:opacity-80"
-              onError={(e) => {
-                e.target.style.display = 'none';
-                e.target.nextSibling.style.display = 'block';
-              }}
-            />
-            <span className="brand-text-wrapper hidden text-xl font-light uppercase tracking-[0.3em] text-text">
-              Pics <span className="font-semibold italic text-gold">Dom</span>
-            </span>
+          {/* Brand Logo Layout Matching the Image Design */}
+          <Link to="/" className="flex items-center group py-1">
+            <div className="brand-text-wrapper flex flex-col items-center justify-center text-text transition-colors duration-300">
+
+              {/* Main Brand Title: PICS DOM with Shutter Icon */}
+              <div className="flex items-center font-extrabold text-lg sm:text-xl md:text-2xl tracking-wider leading-none uppercase select-none">
+                <span>PICS</span>
+                <span className="ml-1.5 flex items-center">
+                  D
+                  <CameraApertureIcon className="inline-block w-4 h-4 sm:w-5 sm:h-5 mx-px transform group-hover:rotate-45 transition-transform duration-500 ease-out" />
+                  M
+                </span>
+              </div>
+
+              {/* Sub-Brand Location: RAEBARELI */}
+              <span className="font-sans text-[8px] sm:text-[9px] font-bold tracking-[0.45em] leading-tight uppercase w-full text-center mt-0.5 opacity-90 select-none">
+                RAEBARELI
+              </span>
+
+            </div>
           </Link>
 
           {/* Desktop Navigation */}
@@ -188,7 +208,7 @@ export default function Navbar() {
           <div className="flex items-center lg:hidden">
             <button
               onClick={() => setIsOpen(true)}
-              className="menu-toggle-btn text-text p-1 hover:opacity-70 transition-opacity"
+              className="menu-toggle-btn text-text p-1 hover:opacity-70 transition-opacity cursor-pointer"
               aria-label="Open directory navigation"
             >
               <FiMenu size={24} />
@@ -206,7 +226,7 @@ export default function Navbar() {
         <div className="flex justify-end w-full">
           <button
             onClick={() => setIsOpen(false)}
-            className="text-text p-2 hover:opacity-70 transition-opacity"
+            className="text-text p-2 hover:opacity-70 transition-opacity cursor-pointer"
             aria-label="Close directory navigation"
           >
             <FiX size={26} />
@@ -236,8 +256,8 @@ export default function Navbar() {
         </div>
 
         <div className="pt-8 border-t border-gold/10 flex justify-between items-center text-[10px] uppercase tracking-[0.2em] text-text-muted">
-          <span>Pics Dom Studio</span>
-          <span>© 2026 Layout</span>
+          <span>Pics Dom Raebareli</span>
+          <span>© 2026</span>
         </div>
       </div>
     </>

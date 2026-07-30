@@ -17,10 +17,8 @@ const quickLinks = [
 ];
 
 const socialLinks = [
-  { name: "Instagram", icon: <FiInstagram size={16} />, href: "#" },
+  { name: "Instagram", icon: <FiInstagram size={16} />, href: "https://www.instagram.com/picsdom.rbl?igsh=MXBqbXZtZm5oN2QyeA==" },
   { name: "Facebook", icon: <FiFacebook size={16} />, href: "#" },
-  { name: "Twitter", icon: <FiTwitter size={16} />, href: "#" },
-  { name: "LinkedIn", icon: <FiLinkedin size={16} />, href: "#" },
 ];
 
 export default function Footer() {
