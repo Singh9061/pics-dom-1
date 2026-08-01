@@ -5,66 +5,68 @@ const studioStats = [
   { value: "08+", label: "Years of Legacy" },
   { value: "250+", label: "Weddings Documented" },
   { value: "15+", label: "Destinations" },
+  { value: "100%", label: "Heart in Every Frame" },
 ];
 
 export default function MoreAboutSection() {
   return (
-    <section className="relative w-full py-28 px-6 md:px-12 lg:px-16 z-10 border-t border-gold/15 bg-surface/40">
-      <div className="mx-auto max-w-7xl">
+    <section className="relative w-full z-10 border-t border-gold/12 overflow-hidden">
 
-        <div className="grid gap-16 lg:grid-cols-12 lg:items-start">
+      {/* Top philosophy band */}
+      <div className="bg-bg py-32 px-6 md:px-12 lg:px-20">
+        <div className="mx-auto max-w-4xl text-center">
+          <span className="text-[10px] uppercase tracking-[0.4em] text-gold block mb-6 font-medium">
+            Our Philosophy
+          </span>
 
-          <div className="lg:col-span-7">
-            <span className="text-[11px] uppercase tracking-[0.35em] text-gold block mb-5 font-medium">
-              Our Philosophy
-            </span>
+          <h2 className="font-serif text-3xl font-light tracking-wide sm:text-4xl md:text-[2.75rem] leading-[1.25] text-text mb-8">
+            Documenting sacred traditions,
+            <br />
+            capturing <span className="italic text-gold font-normal">raw emotion</span>.
+          </h2>
 
-            <h2 className="font-serif text-3xl font-light tracking-wide sm:text-4xl md:text-5xl leading-tight mb-8 text-text">
-              Documenting sacred traditions,
-              <br />
-              capturing <span className="italic text-gold font-normal">raw emotion</span>.
-            </h2>
+          <p className="text-[15px] leading-8 text-text-muted font-light tracking-wide max-w-2xl mx-auto">
+            Founded on the belief that pristine wedding imagery requires deep cultural
+            intuition and technical mastery. We serve as a fine-art haven for palace unions,
+            intimate elopements, and cinematic portraiture — preserving your day in its
+            rawest, most real form.
+          </p>
 
-            <blockquote className="border-l border-gold/40 pl-6 font-serif text-lg italic text-text-muted leading-relaxed max-w-2xl font-light">
-              "A wedding isn&apos;t just a fleeting event — it is the convergence of heritage,
-              families, and two souls. We don&apos;t just take pictures; we archive your legacy."
-            </blockquote>
+          <blockquote className="mt-12 font-serif text-xl md:text-2xl italic text-text/80 leading-relaxed max-w-xl mx-auto font-light">
+            "A wedding isn&apos;t just a fleeting event — it is the convergence of heritage,
+            families, and two souls."
+          </blockquote>
 
-            <div className="mt-10">
-              <Link
-                to="/about"
-                className="group inline-flex items-center gap-4 border border-gold/30 bg-transparent px-8 h-12 text-[11px] font-medium uppercase tracking-[0.25em] text-text transition-all duration-400 hover:bg-gold hover:border-gold hover:text-white"
-              >
-                <span>Discover Our Journey</span>
-                <FiArrowRight size={14} className="transition-transform duration-300 group-hover:translate-x-1" />
-              </Link>
-            </div>
+          <div className="mt-12">
+            <Link
+              to="/about"
+              className="group inline-flex items-center gap-4 border border-gold/25 bg-transparent px-10 h-12 text-[11px] font-medium uppercase tracking-[0.28em] text-text transition-all duration-400 hover:bg-gold hover:border-gold hover:text-white"
+            >
+              <span>Discover Our Journey</span>
+              <FiArrowRight size={13} className="transition-transform duration-300 group-hover:translate-x-1" />
+            </Link>
           </div>
-
-          <div className="lg:col-span-5 flex flex-col justify-between h-full pt-2 lg:pt-10">
-            <p className="text-sm leading-8 text-text-muted tracking-wide mb-12 lg:mb-16 font-light">
-              Founded on the belief that pristine wedding imagery requires deep cultural
-              intuition and technical mastery, our studio serves as a fine-art haven for
-              palace unions, intimate elopements, and cinematic portraiture.
-            </p>
-
-            <div className="grid grid-cols-3 gap-6 border-t border-gold/15 pt-8">
-              {studioStats.map(({ value, label }) => (
-                <div key={label} className="text-center sm:text-left">
-                  <div className="font-serif text-2xl font-light tracking-wide sm:text-3xl md:text-4xl text-text">
-                    {value}
-                  </div>
-                  <div className="mt-2 text-[10px] uppercase tracking-widest leading-normal text-gold/80">
-                    {label}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
         </div>
-
       </div>
+
+      {/* Stats bar — full width, dark editorial */}
+      <div className="bg-text">
+        <div className="mx-auto max-w-6xl px-6 md:px-12 py-16 md:py-20">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-10 md:gap-6">
+            {studioStats.map(({ value, label }) => (
+              <div key={label} className="text-center">
+                <div className="font-serif text-3xl md:text-4xl lg:text-5xl font-light tracking-wide text-white">
+                  {value}
+                </div>
+                <div className="mt-3 text-[10px] uppercase tracking-[0.3em] text-gold/90">
+                  {label}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
     </section>
   );
 }
