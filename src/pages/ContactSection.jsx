@@ -78,10 +78,10 @@ const ContactSection = () => {
                             <div className="space-y-1 pt-1">
                                 <p className="text-[10px] font-semibold tracking-[0.25em] text-text-muted uppercase">Legacy Consulting</p>
                                 <a
-                                    href="mailto:hello@picsdom.com"
+                                    href="mailto:picsdomrbl@gmail.com"
                                     className="font-serif text-lg tracking-wide block text-text hover:text-gold transition-colors underline decoration-1 underline-offset-4 decoration-gold/30 hover:decoration-gold"
                                 >
-                                    hello@picsdom.com
+                                    picsdomrbl@gmail.com
                                 </a>
                             </div>
                         </div>

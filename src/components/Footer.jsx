@@ -2,8 +2,6 @@ import { Link } from "react-router-dom";
 import {
   FiInstagram,
   FiFacebook,
-  FiTwitter,
-  FiLinkedin,
   FiMapPin,
   FiPhone,
   FiMail
@@ -72,8 +70,8 @@ export default function Footer() {
 
               <div className="flex gap-4 items-center">
                 <FiMail size={16} className="text-gold shrink-0" />
-                <a href="mailto:hello@picsdom.com" className="hover:text-gold transition-colors underline decoration-1 underline-offset-4 decoration-gold/20">
-                  hello@picsdom.com
+                <a href="mailto:picsdomrbl@gmail.com" className="hover:text-gold transition-colors underline decoration-1 underline-offset-4 decoration-gold/20">
+                  picsdomrbl@gmail.com
                 </a>
               </div>
             </div>
@@ -127,4 +125,4 @@ export default function Footer() {
       </div>
     </footer>
   );
-} 
+}
