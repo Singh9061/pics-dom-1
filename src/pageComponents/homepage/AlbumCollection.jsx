@@ -1,67 +1,77 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { FiFolder, FiArrowRight } from "react-icons/fi";
+import { FiArrowRight } from "react-icons/fi";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { c2_pic1, c2_pic10, c2_pic7 } from "../../Assets/picture/client2";
+import { c1_pic1, c1_pic10 } from "../../Assets/picture/client1";
+import { c2_pic1, c2_pic7, c2_pic10, c2_pic11 } from "../../Assets/picture/client2";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const indianWeddingAlbums = [
+const loveStories = [
   {
-    id: "royal-palace-union",
-    title: "The Palace Shehnai & Sindoor",
-    count: "120 Heritage Frames",
-    celebration: "Royal Baraat & Pheras",
+    id: "royal-union",
+    couple: "Aanya & Rohan",
+    tagline: "Romance in the palace",
+    excerpt:
+      "We felt it from our hearts when Aanya described Rohan as the missing piece that made her world complete. Over three days of rituals, laughter, and quiet glances, we were fortunate to capture a love story written in tradition and light.",
     coverImage: c2_pic1,
     link: "/gallery",
   },
   {
-    id: "monochrome-tales",
-    title: "Intimate Jharokha Portraits",
-    count: "65 Cinematic Portraits",
-    celebration: "Regal Bridal Dressing & Details",
+    id: "heritage-portraits",
+    couple: "Meera & Kabir",
+    tagline: "Intimate jharokha tales",
+    excerpt:
+      "Every wedding fills our heart in unique ways. At their intimate heritage ceremony, Meera and Kabir reminded us that the most powerful moments live in the soft spaces between the big ones — a smile, a tear, a held breath.",
     coverImage: c2_pic7,
     link: "/gallery",
   },
   {
-    id: "sangeet-soiree",
-    title: "The Champagne Sangeet Beats",
-    count: "85 High-Motion Captures",
-    celebration: "Midnight Shadi Festivities",
+    id: "sangeet-nights",
+    couple: "Priya & Arjun",
+    tagline: "Midnight celebration beats",
+    excerpt:
+      "From the first beat of the sangeet to the last dance under fairy lights, Priya and Arjun's night was pure joy. We lived every rhythm with them — documenting not just the party, but the pure, unfiltered happiness of two families becoming one.",
     coverImage: c2_pic10,
+    link: "/gallery",
+  },
+  {
+    id: "sacred-phere",
+    couple: "Ishita & Dev",
+    tagline: "Vows around the fire",
+    excerpt:
+      "Around the sacred fire, Ishita and Dev exchanged vows that needed no translation. We stayed quiet, present, and ready — capturing the emotion that words could never fully hold, so they can return to this night whenever they wish.",
+    coverImage: c1_pic10,
     link: "/gallery",
   },
 ];
 
 export default function AlbumCollection() {
-  const collectionRef = useRef(null);
-  const rowsRef = useRef([]);
+  const sectionRef = useRef(null);
+  const cardsRef = useRef([]);
   const [isMobile, setIsMobile] = useState(true);
 
   useEffect(() => {
-    const checkViewport = () => {
-      setIsMobile(window.innerWidth < 1024);
-    };
-    checkViewport();
-    window.addEventListener("resize", checkViewport, { passive: true });
+    const check = () => setIsMobile(window.innerWidth < 1024);
+    check();
+    window.addEventListener("resize", check, { passive: true });
 
-    const rows = rowsRef.current.filter(Boolean);
-    if (rows.length === 0 || window.innerWidth < 1024) {
-      return () => window.removeEventListener("resize", checkViewport);
+    const cards = cardsRef.current.filter(Boolean);
+    if (cards.length === 0 || window.innerWidth < 1024) {
+      return () => window.removeEventListener("resize", check);
     }
 
-    // Initialize desktop layout entry state
-    gsap.set(rows, { y: 30, opacity: 0 });
+    gsap.set(cards, { y: 40, opacity: 0 });
 
-    const trigger = ScrollTrigger.batch(rows, {
-      start: "top bottom-=80px",
+    const trigger = ScrollTrigger.batch(cards, {
+      start: "top bottom-=60px",
       onEnter: (batch) =>
         gsap.to(batch, {
           opacity: 1,
           y: 0,
-          stagger: 0.15,
-          duration: 0.7,
+          stagger: 0.12,
+          duration: 0.8,
           ease: "power2.out",
           overwrite: "auto",
         }),
@@ -70,132 +80,81 @@ export default function AlbumCollection() {
 
     return () => {
       trigger.forEach((t) => t.kill());
-      window.removeEventListener("resize", checkViewport);
+      window.removeEventListener("resize", check);
     };
   }, [isMobile]);
 
-  /* ---------------- Desktop GSAP Interaction Engines ---------------- */
-  const handleMouseEnter = (e) => {
-    if (isMobile) return;
-
-    const row = e.currentTarget;
-    const image = row.querySelector(".album-cover-img");
-    const titleText = row.querySelector(".album-title");
-    const arrowCircle = row.querySelector(".album-arrow-circle");
-
-    gsap.to(image, { scale: 1.03, duration: 0.5, ease: "power2.out" });
-    gsap.to(titleText, { color: "#c5a880", duration: 0.25 });
-    gsap.to(arrowCircle, {
-      backgroundColor: "#c5a880",
-      borderColor: "#c5a880",
-      x: 4,
-      color: "#ffffff",
-      duration: 0.3,
-      ease: "power2.out"
-    });
-  };
-
-  const handleMouseLeave = (e) => {
-    if (isMobile) return;
-
-    const row = e.currentTarget;
-    const image = row.querySelector(".album-cover-img");
-    const titleText = row.querySelector(".album-title");
-    const arrowCircle = row.querySelector(".album-arrow-circle");
-
-    gsap.to(image, { scale: 1.0, duration: 0.5, ease: "power2.out" });
-    gsap.to(titleText, { color: "var(--color-text, #1c1a17)", duration: 0.25 });
-    gsap.to(arrowCircle, {
-      backgroundColor: "transparent",
-      borderColor: "rgba(197, 168, 128, 0.4)",
-      x: 0,
-      color: "var(--color-gold, #c5a880)",
-      duration: 0.3,
-      ease: "power2.out"
-    });
-  };
-
   return (
     <section
-      ref={collectionRef}
-      className="relative w-full bg-bg py-24 px-6 md:px-12 lg:px-16 z-10 border-t border-gold/20 overflow-hidden transform-gpu"
+      ref={sectionRef}
+      className="relative w-full bg-bg py-28 px-6 md:px-12 lg:px-16 z-10 border-t border-gold/15 overflow-hidden"
     >
       <div className="mx-auto max-w-7xl">
 
-        {/* Section Header */}
-        <div className="mb-20">
-          <span className="text-xs uppercase tracking-[0.3em] text-text-muted block mb-3">
-            Luxury Shaadi Heirlooms
+        {/* Header — Epic Stories style */}
+        <div className="mb-20 max-w-3xl">
+          <span className="text-[11px] uppercase tracking-[0.35em] text-gold block mb-4 font-medium">
+            A Glimpse Into Our Favourite Love Stories
           </span>
-          <h2 className="font-serif text-3xl font-light uppercase tracking-[0.15em] sm:text-4xl md:text-5xl text-text">
-            Heritage <span className="font-semibold italic text-gold">Archives</span>
+          <h2 className="font-serif text-3xl font-light tracking-wide sm:text-4xl md:text-5xl text-text leading-tight">
+            Stories that live
+            <span className="italic text-gold font-normal"> beyond the day</span>
           </h2>
         </div>
 
-        {/* Landscape Album Row Layout */}
-        <div className="flex flex-col gap-14">
-          {indianWeddingAlbums.map(({ id, title, count, celebration, coverImage, link }, index) => (
-            <div
+        {/* Story cards */}
+        <div className="grid gap-12 md:grid-cols-2">
+          {loveStories.map(({ id, couple, tagline, excerpt, coverImage, link }, index) => (
+            <article
               key={id}
-              ref={(el) => (rowsRef.current[index] = el)}
-              onMouseEnter={handleMouseEnter}
-              onMouseLeave={handleMouseLeave}
-              className={`group flex flex-col gap-8 border-b border-gold/20 pb-12 last:border-0 last:pb-0 md:flex-row md:items-center touch-manipulation transition-all duration-700 transform-gpu will-change-transform ${isMobile ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
-                }`}
+              ref={(el) => (cardsRef.current[index] = el)}
+              className={`group flex flex-col ${isMobile ? "opacity-100" : "opacity-0"}`}
             >
-
-              {/* 1. Album Spine Cover Layer */}
-              <Link
-                to={link}
-                className="relative aspect-16/10 w-full overflow-hidden bg-card md:w-100 lg:w-125 shrink-0 border border-gold/10 shadow-sm transform-gpu"
-              >
+              <Link to={link} className="relative aspect-[4/3] w-full overflow-hidden bg-card mb-7">
                 <img
                   src={coverImage}
-                  alt={title}
-                  loading={index === 0 ? "eager" : "lazy"}
-                  fetchpriority={index === 0 ? "high" : "auto"}
+                  alt={couple}
+                  loading={index < 2 ? "eager" : "lazy"}
                   decoding="async"
-                  className="album-cover-img h-full w-full object-cover origin-center transform-gpu"
+                  className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
                 />
-
-                {/* Traditional Fine-Art Premium Album Fold Line Overlay */}
-                <div className="absolute top-0 left-0 h-full w-4 bg-linear-to-r from-black/25 via-black/5 to-transparent shadow-[inset_1px_0_0_rgba(255,255,255,0.08)]" />
-                <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors duration-500" />
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-500" />
               </Link>
 
-              {/* 2. Indian Wedding Detailed Meta Content */}
-              <div className="flex flex-1 flex-col justify-between py-2">
-                <div>
-                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs tracking-widest text-text-muted uppercase mb-4">
-                    <span className="flex items-center gap-1.5 font-medium text-gold">
-                      <FiFolder size={12} className="text-gold" />
-                      {count}
-                    </span>
-                    <span className="text-gold/30 hidden sm:inline">&bull;</span>
-                    <span className="tracking-[0.18em] text-text-muted/90">{celebration}</span>
-                  </div>
+              <div className="flex flex-col flex-1">
+                <h3 className="font-serif text-2xl font-light tracking-wide text-text md:text-3xl">
+                  {couple}
+                </h3>
+                <p className="mt-1.5 text-[11px] uppercase tracking-[0.25em] text-gold italic font-serif text-base normal-case tracking-normal">
+                  {tagline}
+                </p>
+                <p className="mt-4 text-sm leading-7 text-text-muted font-light tracking-wide line-clamp-4">
+                  {excerpt}
+                </p>
 
-                  <h3 className="album-title font-serif text-2xl font-light tracking-wide text-text md:text-3xl lg:text-4xl transition-colors duration-300">
-                    {title}
-                  </h3>
-                </div>
-
-                {/* Inline Action Trigger Layout */}
-                <div className="mt-8 md:mt-12">
-                  <Link
-                    to={link}
-                    className="inline-flex items-center gap-4 text-xs font-semibold uppercase tracking-[0.2em] text-text group/btn"
-                  >
-                    <span className="group-hover/btn:text-gold transition-colors duration-300">View Love Story</span>
-                    <div className="album-arrow-circle flex h-9 w-9 items-center justify-center rounded-full border border-gold/40 bg-transparent text-gold transition-all duration-300 max-lg:group-hover/btn:translate-x-1">
-                      <FiArrowRight size={14} />
-                    </div>
-                  </Link>
-                </div>
+                <Link
+                  to={link}
+                  className="mt-6 inline-flex items-center gap-3 text-[11px] font-medium uppercase tracking-[0.25em] text-text group/link"
+                >
+                  <span className="group-hover/link:text-gold transition-colors duration-300">See More</span>
+                  <FiArrowRight
+                    size={14}
+                    className="text-gold transition-transform duration-300 group-hover/link:translate-x-1"
+                  />
+                </Link>
               </div>
-
-            </div>
+            </article>
           ))}
+        </div>
+
+        {/* View all */}
+        <div className="mt-16 text-center">
+          <Link
+            to="/gallery"
+            className="inline-flex h-12 items-center justify-center border border-gold/30 px-10 text-[11px] font-medium uppercase tracking-[0.25em] text-text transition-all duration-400 hover:bg-gold hover:border-gold hover:text-white"
+          >
+            View All Stories
+          </Link>
         </div>
 
       </div>

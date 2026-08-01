@@ -1,46 +1,37 @@
-@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap");
 
 @import "tailwindcss";
 
 @theme {
-  /* Fonts */
+  /* Fonts — editorial serif + refined sans */
   --font-sans: "Plus Jakarta Sans", sans-serif;
+  --font-serif: "Cormorant Garamond", Georgia, "Times New Roman", serif;
   --font-mono: "JetBrains Mono", monospace;
 
   /* Radius */
-  --radius: 24px;
+  --radius: 2px;
 
   /* Motion */
-  --transition: 300ms cubic-bezier(0.25, 1, 0.5, 1);
+  --transition: 400ms cubic-bezier(0.25, 1, 0.5, 1);
 
-  /* ========= LUXURY WHITE & GOLD TONALITY ========= */
-  --color-bg: #fcfbfa;
-  /* Warm soft studio white */
-  --color-surface: #f5f2eb;
-  /* Smooth alabaster accent surface */
+  /* ========= SOFT LUXURY WHITE & GOLD ========= */
+  --color-bg: #faf9f7;
+  --color-surface: #f3f0ea;
   --color-card: #ffffff;
-  /* Pure bright white for content framing */
 
-  --color-text: #1c1a17;
-  /* Ultra-dark deep espresso charcoal instead of harsh pure black */
-  --color-text-muted: #8c857b;
-  /* Muted warm stone gray for subtext */
+  --color-text: #1a1814;
+  --color-text-muted: #8a8478;
 
-  /* Gold Accent Token Hierarchy */
-  --color-gold: #c5a880;
-  /* Primary editorial champagne gold */
-  --color-gold-hover: #a68c67;
-  /* Deep museum brass gold on hover interaction */
+  --color-gold: #b89b6c;
+  --color-gold-hover: #9a7f54;
 
-  --color-border: rgba(197, 168, 128, 0.15);
-  /* Delicate gold-tinted transparent border lines */
+  --color-border: rgba(184, 155, 108, 0.18);
 
-  --color-primary: #c5a880;
-  --color-primary-hover: #a68c67;
+  --color-primary: #b89b6c;
+  --color-primary-hover: #9a7f54;
 
-  --shadow-card: 0 12px 35px rgba(28, 26, 23, 0.04);
-  /* Subtly tinted warm deep shadows */
-  --glass: rgba(255, 255, 255, 0.75);
+  --shadow-card: 0 16px 48px rgba(26, 24, 20, 0.05);
+  --glass: rgba(255, 255, 255, 0.72);
 }
 
 @layer base {
@@ -64,26 +55,27 @@
     border-color: var(--color-border);
   }
 
+  .font-serif {
+    font-family: var(--font-serif);
+  }
+
   code,
   pre {
     font-family: var(--font-mono);
   }
 
   ::selection {
-    background: rgba(197, 168, 128, 0.12);
-    /* Soft gold highlight selection tint */
+    background: rgba(184, 155, 108, 0.14);
     color: inherit;
   }
 
-  /* Fine-Art Minimal Scrollbar Mechanics */
   ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+    width: 5px;
+    height: 5px;
   }
 
   ::-webkit-scrollbar-thumb {
-    background: rgba(197, 168, 128, 0.3);
-    /* Gold track indicator */
+    background: rgba(184, 155, 108, 0.35);
     border-radius: 999px;
   }
 
@@ -93,8 +85,6 @@
 }
 
 @layer utilities {
-
-  /* Premium Champagne Glassmorphic Layer */
   .glass {
     background: var(--glass);
     backdrop-filter: blur(20px);
@@ -103,7 +93,6 @@
     box-shadow: var(--shadow-card);
   }
 
-  /* Standard Minimal Layout Card */
   .card {
     background: var(--color-card);
     border: 1px solid var(--color-border);
@@ -111,7 +100,6 @@
     box-shadow: var(--shadow-card);
   }
 
-  /* Dynamic Fine-Art Focus Mechanics */
   .hover-lift {
     transition:
       transform var(--transition),
@@ -120,12 +108,11 @@
   }
 
   .hover-lift:hover {
-    transform: translateY(-5px);
-    border-color: rgba(197, 168, 128, 0.4);
-    box-shadow: 0 20px 40px rgba(197, 168, 128, 0.08);
+    transform: translateY(-4px);
+    border-color: rgba(184, 155, 108, 0.35);
+    box-shadow: 0 24px 48px rgba(184, 155, 108, 0.08);
   }
 
-  /* Base Typography Adjustments */
   .text-muted {
     color: var(--color-text-muted);
   }
@@ -134,36 +121,31 @@
     color: var(--color-gold);
   }
 
-  /* Gold Metallic Editorial Heading Gradient */
   .text-gradient {
     background: linear-gradient(135deg,
         var(--color-text) 30%,
-        var(--color-gold) 100__);
+        var(--color-gold) 100%);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
   }
 
-  /* Clean Premium Grid Background Mapping with Warm Gold Intersections */
   .grid-bg {
     background-image:
-      linear-gradient(rgba(197, 168, 128, 0.04) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(197, 168, 128, 0.04) 1px, transparent 1px);
-    background-size: 40px 40px;
+      linear-gradient(rgba(184, 155, 108, 0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(184, 155, 108, 0.04) 1px, transparent 1px);
+    background-size: 48px 48px;
   }
 
-  /* Structural Micro-Animations */
   .float {
     animation: float 6s ease-in-out infinite;
   }
 
   @keyframes float {
-
     0%,
     100% {
       transform: translateY(0);
     }
-
     50% {
       transform: translateY(-6px);
     }
