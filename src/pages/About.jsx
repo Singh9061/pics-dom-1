@@ -109,8 +109,8 @@ export default function About() {
                         <div className="mt-2 text-[11px] uppercase tracking-widest text-gold/80 font-medium">Historic Destinations</div>
                     </div>
                     <div>
-                        <div className="font-serif text-3xl font-light md:text-4xl text-text">01</div>
-                        <div className="mt-2 text-[11px] uppercase tracking-widest text-gold/80 font-medium">Immersive Approach</div>
+                        <div className="font-serif text-3xl font-light md:text-4xl text-text">99.9%</div>
+                        <div className="mt-2 text-[11px] uppercase tracking-widest text-gold/80 font-medium">Client Satisfaction</div>
                     </div>
                 </div>
             </section>
