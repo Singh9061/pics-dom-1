@@ -28,7 +28,7 @@ function AppRoutes() {
   return (
     <>
       {showSplash && location.pathname === "/" && (
-        <SplashScreen onFinish={handleSplashFinish} duration={4200} />
+        <SplashScreen onFinish={handleSplashFinish} duration={5200} />
       )}
 
       <Suspense fallback={<PageLoader />}>
