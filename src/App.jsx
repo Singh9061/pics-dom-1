@@ -18,14 +18,10 @@ const PageLoader = () => (
 
 function AppRoutes() {
   const location = useLocation();
-  const [showSplash, setShowSplash] = useState(() => {
-    const isHome = location.pathname === "/";
-    const hasSeenSplash = sessionStorage.getItem("hasSeenSplash");
-    return isHome && !hasSeenSplash;
-  });
+  // Always show splash when landing on home
+  const [showSplash, setShowSplash] = useState(() => location.pathname === "/");
 
   const handleSplashFinish = () => {
-    sessionStorage.setItem("hasSeenSplash", "true");
     setShowSplash(false);
   };
 
