@@ -1,6 +1,5 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 
-/** Synthesize mechanical shutter click */
 function playShutterClick() {
   try {
     const Ctx = window.AudioContext || window.webkitAudioContext;
@@ -43,12 +42,35 @@ function playShutterClick() {
       try {
         ctx.close();
       } catch {
-        /* */
+        /* ignore */
       }
     }, 250);
   } catch {
-    /* autoplay */
+    /* autoplay blocked */
   }
+}
+
+function ApertureBlades() {
+  const blades = [];
+  for (let i = 0; i < 6; i++) {
+    const a = (i * 60 * Math.PI) / 180;
+    const a2 = ((i + 1) * 60 * Math.PI) / 180;
+    const x1 = 60 + Math.cos(a) * 52;
+    const y1 = 60 + Math.sin(a) * 52;
+    const x2 = 60 + Math.cos(a2) * 52;
+    const y2 = 60 + Math.sin(a2) * 52;
+    const cx = 60 + Math.cos(a + Math.PI / 6) * 28;
+    const cy = 60 + Math.sin(a + Math.PI / 6) * 28;
+    blades.push(
+      <path
+        key={i}
+        d={"M 60 60 L " + x1 + " " + y1 + " Q " + cx + " " + cy + " " + x2 + " " + y2 + " Z"}
+        fill="#c5a880"
+        opacity="0.85"
+      />
+    );
+  }
+  return <g className="aperture-blades">{blades}</g>;
 }
 
 export default function SplashScreen({ onFinish, duration = 5200 }) {
@@ -64,28 +86,41 @@ export default function SplashScreen({ onFinish, duration = 5200 }) {
 
   useEffect(() => {
     const timers = [
-      setTimeout(() => setPhase("shutter"), 300),
-      setTimeout(() => setPhase("power"), 1100),
-      setTimeout(() => setPhase("lens"), 1600),
-      setTimeout(() => {
+      setTimeout(function () { setPhase("shutter"); }, 300),
+      setTimeout(function () { setPhase("power"); }, 1100),
+      setTimeout(function () { setPhase("lens"); }, 1600),
+      setTimeout(function () {
         setPhase("capture");
         triggerSound();
       }, 2800),
-      setTimeout(() => setPhase("brand"), 3400),
-      setTimeout(() => setPhase("exit"), duration - 900),
-      setTimeout(() => {
+      setTimeout(function () { setPhase("brand"); }, 3400),
+      setTimeout(function () { setPhase("exit"); }, duration - 900),
+      setTimeout(function () {
         if (!finished.current) {
           finished.current = true;
-          onFinish();
+          if (typeof onFinish === "function") onFinish();
         }
       }, duration),
     ];
-    return () => timers.forEach(clearTimeout);
+    return function () {
+      timers.forEach(clearTimeout);
+    };
   }, [duration, onFinish, triggerSound]);
+
+  const showBrand = phase === "brand" || phase === "exit";
+  const showHud = phase !== "boot" && phase !== "shutter";
+  const showProgress = phase !== "boot";
+  const flashFire = phase === "capture";
+
+  let statusText = "READY";
+  if (phase === "boot" || phase === "shutter") statusText = "OPENING...";
+  else if (phase === "power") statusText = "POWERING ON...";
+  else if (phase === "lens") statusText = "FOCUSING...";
+  else if (phase === "capture") statusText = "CAPTURED";
 
   return (
     <div
-      className={`splash-root fixed inset-0 z-[10000] flex flex-col items-center justify-center bg-[#050504] overflow-hidden phase-${phase}`}
+      className={"splash-root fixed inset-0 z-[10000] flex flex-col items-center justify-center bg-[#050504] overflow-hidden phase-" + phase}
       onClick={triggerSound}
       onTouchStart={triggerSound}
     >
@@ -94,35 +129,12 @@ export default function SplashScreen({ onFinish, duration = 5200 }) {
       <div className="film-grain" aria-hidden="true" />
       <div className="splash-vignette" />
 
-      <div
-        className={`brand-block ${
-          phase === "brand" || phase === "exit" ? "show" : ""
-        }`}
-      >
+      <div className={"brand-block" + (showBrand ? " show" : "")}>
         <div className="aperture-brand">
           <svg className="aperture-ring" viewBox="0 0 120 120">
             <circle cx="60" cy="60" r="56" fill="none" stroke="rgba(197,168,128,0.35)" strokeWidth="1.5" />
             <circle cx="60" cy="60" r="52" fill="none" stroke="rgba(197,168,128,0.15)" strokeWidth="0.8" />
-            <g className="aperture-blades">
-              {[0, 1, 2, 3, 4, 5].map((i) => {
-                const a = (i * 60 * Math.PI) / 180;
-                const a2 = ((i + 1) * 60 * Math.PI) / 180;
-                const x1 = 60 + Math.cos(a) * 52;
-                const y1 = 60 + Math.sin(a) * 52;
-                const x2 = 60 + Math.cos(a2) * 52;
-                const y2 = 60 + Math.sin(a2) * 52;
-                const cx = 60 + Math.cos(a + Math.PI / 6) * 28;
-                const cy = 60 + Math.sin(a + Math.PI / 6) * 28;
-                return (
-                  <path
-                    key={i}
-                    d={`M 60 60 L ${x1} ${y1} Q ${cx} ${cy} ${x2} ${y2} Z`}
-                    fill="#c5a880"
-                    opacity="0.85"
-                  />
-                );
-              })}
-            </g>
+            <ApertureBlades />
             <circle className="aperture-center" cx="60" cy="60" r="22" fill="#050504" />
             <circle className="aperture-center-ring" cx="60" cy="60" r="22" fill="none" stroke="#c5a880" strokeWidth="0.8" opacity="0.5" />
           </svg>
@@ -132,32 +144,24 @@ export default function SplashScreen({ onFinish, duration = 5200 }) {
           </div>
         </div>
         <span className="brand-loc">Raebareli</span>
-        <p className={`brand-tag ${phase === "brand" || phase === "exit" ? "sharp" : "blurred"}`}>
+        <p className={"brand-tag" + (showBrand ? " sharp" : " blurred")}>
           We live the moments with you
         </p>
       </div>
 
-      <div className={`status-hud ${phase !== "boot" && phase !== "shutter" ? "show" : ""}`}>
-        <span className="hud-line">SONY α M5</span>
-        <span className="hud-line dim">f/1.4 · 1/125 · ISO 400</span>
-        <span className={`hud-line gold ${phase === "capture" || phase === "brand" ? "pulse" : ""}`}>
-          {phase === "boot" || phase === "shutter"
-            ? "OPENING…"
-            : phase === "power"
-              ? "POWERING ON…"
-              : phase === "lens"
-                ? "FOCUSING…"
-                : phase === "capture"
-                  ? "CAPTURED"
-                  : "READY"}
+      <div className={"status-hud" + (showHud ? " show" : "")}>
+        <span className="hud-line">SONY a M5</span>
+        <span className="hud-line dim">f/1.4 - 1/125 - ISO 400</span>
+        <span className={"hud-line gold" + (phase === "capture" || phase === "brand" ? " pulse" : "")}>
+          {statusText}
         </span>
       </div>
 
-      <div className={`progress-wrap ${phase !== "boot" ? "show" : ""}`}>
+      <div className={"progress-wrap" + (showProgress ? " show" : "")}>
         <div className="progress-bar" />
       </div>
 
-      <div className={`full-flash ${phase === "capture" ? "fire" : ""}`} />
+      <div className={"full-flash" + (flashFire ? " fire" : "")} />
 
       <style>{`
         .splash-root {
@@ -294,7 +298,7 @@ export default function SplashScreen({ onFinish, duration = 5200 }) {
         }
         .brand-tag {
           margin-top: 12px;
-          font-family: "Cormorant Garamond", Georgia, serif;
+          font-family: Georgia, serif;
           font-style: italic; font-size: 0.95rem;
           color: rgba(255,255,255,0.45);
           transition: filter 1.1s ease, opacity 1s ease;
@@ -318,7 +322,7 @@ export default function SplashScreen({ onFinish, duration = 5200 }) {
         .hud-line {
           font-size: 9px; letter-spacing: 0.3em; text-transform: uppercase;
           color: rgba(255,255,255,0.5);
-          font-family: "JetBrains Mono", monospace;
+          font-family: monospace;
         }
         .hud-line.dim { color: rgba(255,255,255,0.28); font-size: 8px; }
         .hud-line.gold { color: #c5a880; margin-top: 4px; }
