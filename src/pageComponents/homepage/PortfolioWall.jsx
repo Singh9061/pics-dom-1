@@ -1,33 +1,43 @@
 import { useEffect, useRef, useState, useMemo, useCallback } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import gsap from "gsap";
 import { MASTER_GALLERY_ARCHIVE } from "../../data/galleryData";
 
 /**
  * 4D Portfolio Wall — spatial photo field
- * Mouse X/Y → camera (perspective rotate)
- * Wheel → depth travel (Z)
- * Hover → photo comes forward, neighbors push back
+ * Mouse X/Y → camera (lerped)
+ * Wheel → depth travel (lerped)
+ * Hover → photo forward, neighbors back (lerped)
+ * Click → portal zoom into photo → /gallery
  */
 export default function PortfolioWall() {
   const sectionRef = useRef(null);
   const stageRef = useRef(null);
   const cardsRef = useRef([]);
-  const depthRef = useRef(0);
-  const mouseRef = useRef({ x: 0, y: 0 });
-  const hoverZRef = useRef({}); // id → extra Z offset
-  const scaleRef = useRef({}); // id → scale
+  const depthTarget = useRef(0);
+  const depthCurrent = useRef(0);
+  const mouseTarget = useRef({ x: 0, y: 0 });
+  const mouseCurrent = useRef({ x: 0, y: 0 });
+  const hoverZTarget = useRef({});
+  const hoverZCurrent = useRef({});
+  const scaleTarget = useRef({});
+  const scaleCurrent = useRef({});
   const rafRef = useRef(null);
+  const enteringRef = useRef(false);
   const [hoveredId, setHoveredId] = useState(null);
   const [isTouch, setIsTouch] = useState(false);
+  const navigate = useNavigate();
 
   const photos = useMemo(() => {
     return MASTER_GALLERY_ARCHIVE.slice(0, 16).map((item, i) => {
       const col = i % 4;
       const row = Math.floor(i / 4);
-      const x = (col - 1.5) * 28 + (Math.random() - 0.5) * 8;
-      const y = (row - 1.5) * 26 + (Math.random() - 0.5) * 6;
-      const z = (Math.random() - 0.5) * 380;
+      // Deterministic scatter (no random — stable layout)
+      const jitterX = ((i * 17) % 11) - 5;
+      const jitterY = ((i * 13) % 9) - 4;
+      const x = (col - 1.5) * 28 + jitterX * 0.7;
+      const y = (row - 1.5) * 26 + jitterY * 0.6;
+      const z = ((i * 37) % 21) * 18 - 180; // -180..180-ish
       return { ...item, x, y, z, baseZ: z };
     });
   }, []);
@@ -38,16 +48,24 @@ export default function PortfolioWall() {
       navigator.maxTouchPoints > 0 ||
       window.matchMedia("(pointer: coarse)").matches;
     setIsTouch(touch);
-  }, []);
+
+    photos.forEach((p) => {
+      hoverZTarget.current[p.id] = 0;
+      hoverZCurrent.current[p.id] = 0;
+      scaleTarget.current[p.id] = 1;
+      scaleCurrent.current[p.id] = 1;
+    });
+  }, [photos]);
 
   useEffect(() => {
     if (isTouch) return;
     const onMove = (e) => {
       const rect = sectionRef.current?.getBoundingClientRect();
       if (!rect) return;
-      const nx = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
-      const ny = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
-      mouseRef.current = { x: nx, y: ny };
+      mouseTarget.current = {
+        x: ((e.clientX - rect.left) / rect.width - 0.5) * 2,
+        y: ((e.clientY - rect.top) / rect.height - 0.5) * 2,
+      };
     };
     const section = sectionRef.current;
     section?.addEventListener("mousemove", onMove, { passive: true });
@@ -62,9 +80,9 @@ export default function PortfolioWall() {
       const rect = section.getBoundingClientRect();
       if (rect.bottom < 0 || rect.top > window.innerHeight) return;
       e.preventDefault();
-      depthRef.current = Math.max(
+      depthTarget.current = Math.max(
         -420,
-        Math.min(320, depthRef.current - e.deltaY * 0.35)
+        Math.min(320, depthTarget.current - e.deltaY * 0.35)
       );
     };
 
@@ -72,24 +90,51 @@ export default function PortfolioWall() {
     return () => section.removeEventListener("wheel", onWheel);
   }, []);
 
-  // Apply stage camera + per-card transforms every frame
+  // RAF loop with lerp
   useEffect(() => {
+    const lerp = (a, b, t) => a + (b - a) * t;
+
     const tick = () => {
+      // Camera
+      mouseCurrent.current.x = lerp(
+        mouseCurrent.current.x,
+        mouseTarget.current.x,
+        0.08
+      );
+      mouseCurrent.current.y = lerp(
+        mouseCurrent.current.y,
+        mouseTarget.current.y,
+        0.08
+      );
+      depthCurrent.current = lerp(
+        depthCurrent.current,
+        depthTarget.current,
+        0.1
+      );
+
       const stage = stageRef.current;
       if (stage) {
-        const { x, y } = mouseRef.current;
-        const rotY = x * 9;
-        const rotX = -y * 6;
-        const z = depthRef.current;
-        stage.style.transform = `translateZ(${z}px) rotateX(${rotX}deg) rotateY(${rotY}deg)`;
+        const { x, y } = mouseCurrent.current;
+        stage.style.transform = `translateZ(${depthCurrent.current}px) rotateX(${-y * 6}deg) rotateY(${x * 9}deg)`;
       }
 
       photos.forEach((photo, i) => {
         const el = cardsRef.current[i];
         if (!el) return;
-        const extraZ = hoverZRef.current[photo.id] ?? 0;
-        const scale = scaleRef.current[photo.id] ?? 1;
-        el.style.transform = `translate3d(${photo.x}%, ${photo.y}%, ${photo.baseZ + extraZ}px) scale(${scale})`;
+        const id = photo.id;
+        hoverZCurrent.current[id] = lerp(
+          hoverZCurrent.current[id] ?? 0,
+          hoverZTarget.current[id] ?? 0,
+          0.12
+        );
+        scaleCurrent.current[id] = lerp(
+          scaleCurrent.current[id] ?? 1,
+          scaleTarget.current[id] ?? 1,
+          0.12
+        );
+        const ez = hoverZCurrent.current[id];
+        const sc = scaleCurrent.current[id];
+        el.style.transform = `translate3d(${photo.x}%, ${photo.y}%, ${photo.baseZ + ez}px) scale(${sc})`;
       });
 
       rafRef.current = requestAnimationFrame(tick);
@@ -98,7 +143,6 @@ export default function PortfolioWall() {
     return () => cancelAnimationFrame(rafRef.current);
   }, [photos]);
 
-  // Fade in
   useEffect(() => {
     const cards = cardsRef.current.filter(Boolean);
     if (!cards.length) return;
@@ -117,22 +161,74 @@ export default function PortfolioWall() {
 
   const handleHover = useCallback(
     (id, enter) => {
+      if (enteringRef.current) return;
       setHoveredId(enter ? id : null);
-
       photos.forEach((photo) => {
         if (enter && photo.id === id) {
-          hoverZRef.current[photo.id] = 180;
-          scaleRef.current[photo.id] = 1.12;
+          hoverZTarget.current[photo.id] = 200;
+          scaleTarget.current[photo.id] = 1.14;
         } else if (enter) {
-          hoverZRef.current[photo.id] = -90;
-          scaleRef.current[photo.id] = 0.92;
+          hoverZTarget.current[photo.id] = -100;
+          scaleTarget.current[photo.id] = 0.9;
         } else {
-          hoverZRef.current[photo.id] = 0;
-          scaleRef.current[photo.id] = 1;
+          hoverZTarget.current[photo.id] = 0;
+          scaleTarget.current[photo.id] = 1;
         }
       });
     },
     [photos]
+  );
+
+  // Portal: zoom into clicked photo then navigate
+  const handleEnter = useCallback(
+    (e, photo, index) => {
+      e.preventDefault();
+      if (enteringRef.current) return;
+      enteringRef.current = true;
+
+      const el = cardsRef.current[index];
+      if (!el) {
+        navigate("/gallery");
+        return;
+      }
+
+      // Others fade / push back
+      cardsRef.current.forEach((card, i) => {
+        if (!card || i === index) return;
+        gsap.to(card, {
+          opacity: 0,
+          duration: 0.45,
+          ease: "power2.in",
+        });
+      });
+
+      // Selected flies toward camera
+      hoverZTarget.current[photo.id] = 520;
+      scaleTarget.current[photo.id] = 1.55;
+
+      gsap.to(el, {
+        opacity: 1,
+        duration: 0.55,
+        ease: "power2.in",
+        onComplete: () => {
+          // Full black flash then route
+          const flash = document.createElement("div");
+          flash.style.cssText =
+            "position:fixed;inset:0;background:#000;z-index:200;opacity:0;pointer-events:none";
+          document.body.appendChild(flash);
+          gsap.to(flash, {
+            opacity: 1,
+            duration: 0.28,
+            ease: "power3.in",
+            onComplete: () => {
+              navigate("/gallery");
+              setTimeout(() => flash.remove(), 80);
+            },
+          });
+        },
+      });
+    },
+    [navigate]
   );
 
   return (
@@ -152,7 +248,7 @@ export default function PortfolioWall() {
           The Wall
         </h2>
         <p className="mt-3 text-[11px] text-white/40 tracking-wide hidden sm:block">
-          Move mouse · Scroll depth · Hover to pull forward
+          Move mouse · Scroll depth · Hover · Click to enter frame
         </p>
       </div>
 
@@ -166,13 +262,14 @@ export default function PortfolioWall() {
         }}
       >
         {photos.map((photo, index) => (
-          <Link
+          <a
             key={photo.id}
-            to="/gallery"
+            href="/gallery"
             ref={(el) => (cardsRef.current[index] = el)}
             onMouseEnter={() => !isTouch && handleHover(photo.id, true)}
             onMouseLeave={() => !isTouch && handleHover(photo.id, false)}
-            className="absolute overflow-hidden rounded-sm border border-white/10 shadow-2xl cursor-pointer transition-[box-shadow] duration-400"
+            onClick={(e) => handleEnter(e, photo, index)}
+            className="absolute overflow-hidden rounded-sm border border-white/10 shadow-2xl cursor-pointer"
             style={{
               width: "min(22vw, 200px)",
               aspectRatio: "3/4",
@@ -199,17 +296,21 @@ export default function PortfolioWall() {
                 hoveredId === photo.id ? "opacity-0" : "opacity-30"
               } bg-gradient-to-t from-black/70 via-transparent to-black/20`}
             />
-          </Link>
+          </a>
         ))}
       </div>
 
       <div className="absolute bottom-8 left-0 right-0 z-30 flex justify-center pointer-events-auto">
-        <Link
-          to="/gallery"
+        <a
+          href="/gallery"
+          onClick={(e) => {
+            e.preventDefault();
+            navigate("/gallery");
+          }}
           className="text-[10px] uppercase tracking-[0.35em] text-white/60 hover:text-gold transition-colors duration-300 border border-white/15 px-6 py-3 hover:border-gold/40"
         >
           Enter Full Archive
-        </Link>
+        </a>
       </div>
     </section>
   );
