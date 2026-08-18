@@ -4,6 +4,8 @@ import AlbumCollection from "./AlbumCollection";
 import FilmsSection from "./FilmsSection";
 import InstagramFeed from "./InstagramFeed";
 import MoreAboutSection from "./MoreAboutSection";
+import CameraLensTransition from "./CameraLensTransition";
+import PortfolioWall from "./PortfolioWall";
 
 export {
   HeroSection,
@@ -12,4 +14,6 @@ export {
   FilmsSection,
   InstagramFeed,
   MoreAboutSection,
+  CameraLensTransition,
+  PortfolioWall,
 };

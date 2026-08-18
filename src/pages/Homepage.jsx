@@ -1,5 +1,7 @@
-import { lazy, Suspense, useEffect } from "react";
+import { lazy, Suspense, useEffect, useState, useCallback } from "react";
 import HeroSection from "../pageComponents/homepage/Herosection";
+import CameraLensTransition from "../pageComponents/homepage/CameraLensTransition";
+import PortfolioWall from "../pageComponents/homepage/PortfolioWall";
 
 const PhotographyShowcase = lazy(() => import("../pageComponents/homepage/PhotographyShowcase"));
 const AlbumCollection = lazy(() => import("../pageComponents/homepage/AlbumCollection"));
@@ -18,6 +20,10 @@ const SectionSkeleton = () => (
 );
 
 export default function Homepage() {
+  const [lensActive, setLensActive] = useState(false);
+  const [showWall, setShowWall] = useState(false);
+  const [lensDone, setLensDone] = useState(false);
+
   useEffect(() => {
     const styleTag = document.createElement("style");
     styleTag.innerHTML = `
@@ -32,9 +38,44 @@ export default function Homepage() {
     };
   }, []);
 
+  // Trigger lens transition when user scrolls past hero (~85vh)
+  useEffect(() => {
+    if (lensDone) return;
+
+    const onScroll = () => {
+      if (window.scrollY > window.innerHeight * 0.72) {
+        setLensActive(true);
+      }
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [lensDone]);
+
+  const handleLensComplete = useCallback(() => {
+    setLensDone(true);
+    setShowWall(true);
+    setLensActive(false);
+    // Unlock scroll feel — wall is already in flow below
+  }, []);
+
   return (
     <>
       <HeroSection />
+
+      {/* Signature lens transition overlay */}
+      <CameraLensTransition
+        active={lensActive}
+        onComplete={handleLensComplete}
+      />
+
+      {/* 4D Portfolio Wall — appears after lens or immediately on revisit */}
+      {(showWall || lensDone) && <PortfolioWall />}
+
+      {/* Keep wall mounted after first play so scroll works */}
+      {!showWall && !lensDone && (
+        <div className="h-[20vh] bg-black" aria-hidden />
+      )}
 
       <Suspense fallback={<SectionSkeleton />}>
         <PhotographyShowcase />
