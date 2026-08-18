@@ -21,7 +21,6 @@ const SectionSkeleton = () => (
 
 export default function Homepage() {
   const [lensActive, setLensActive] = useState(false);
-  const [showWall, setShowWall] = useState(false);
   const [lensDone, setLensDone] = useState(false);
 
   useEffect(() => {
@@ -38,12 +37,12 @@ export default function Homepage() {
     };
   }, []);
 
-  // Trigger lens transition when user scrolls past hero (~85vh)
+  // Trigger lens once when scrolling past hero
   useEffect(() => {
     if (lensDone) return;
 
     const onScroll = () => {
-      if (window.scrollY > window.innerHeight * 0.72) {
+      if (window.scrollY > window.innerHeight * 0.65) {
         setLensActive(true);
       }
     };
@@ -54,28 +53,20 @@ export default function Homepage() {
 
   const handleLensComplete = useCallback(() => {
     setLensDone(true);
-    setShowWall(true);
     setLensActive(false);
-    // Unlock scroll feel — wall is already in flow below
   }, []);
 
   return (
     <>
       <HeroSection />
 
-      {/* Signature lens transition overlay */}
       <CameraLensTransition
         active={lensActive}
         onComplete={handleLensComplete}
       />
 
-      {/* 4D Portfolio Wall — appears after lens or immediately on revisit */}
-      {(showWall || lensDone) && <PortfolioWall />}
-
-      {/* Keep wall mounted after first play so scroll works */}
-      {!showWall && !lensDone && (
-        <div className="h-[20vh] bg-black" aria-hidden />
-      )}
+      {/* 4D Portfolio Wall always in flow */}
+      <PortfolioWall />
 
       <Suspense fallback={<SectionSkeleton />}>
         <PhotographyShowcase />
