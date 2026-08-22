@@ -1,28 +1,37 @@
-import { lazy, Suspense, useEffect, useState, useCallback } from "react";
-import HeroSection from "../pageComponents/homepage/Herosection";
-import CameraLensTransition from "../pageComponents/homepage/CameraLensTransition";
+import { lazy, Suspense, useEffect } from "react";
+import ThroughTheLensHero from "../pageComponents/homepage/ThroughTheLensHero";
 import PortfolioWall from "../pageComponents/homepage/PortfolioWall";
 
-const PhotographyShowcase = lazy(() => import("../pageComponents/homepage/PhotographyShowcase"));
-const AlbumCollection = lazy(() => import("../pageComponents/homepage/AlbumCollection"));
-const FilmsSection = lazy(() => import("../pageComponents/homepage/FilmsSection"));
-const InstagramFeed = lazy(() => import("../pageComponents/homepage/InstagramFeed"));
-const MoreAboutSection = lazy(() => import("../pageComponents/homepage/MoreAboutSection"));
+const PhotographyShowcase = lazy(() =>
+  import("../pageComponents/homepage/PhotographyShowcase")
+);
+const AlbumCollection = lazy(() =>
+  import("../pageComponents/homepage/AlbumCollection")
+);
+const FilmsSection = lazy(() =>
+  import("../pageComponents/homepage/FilmsSection")
+);
+const InstagramFeed = lazy(() =>
+  import("../pageComponents/homepage/InstagramFeed")
+);
+const MoreAboutSection = lazy(() =>
+  import("../pageComponents/homepage/MoreAboutSection")
+);
 
 const SectionSkeleton = () => (
-  <div className="w-full py-24 animate-pulse bg-bg-secondary/20 px-6">
-    <div className="max-w-6xl mx-auto space-y-4">
-      <div className="h-5 w-1/4 bg-border rounded" />
-      <div className="h-4 w-2/3 bg-border rounded opacity-60" />
-      <div className="h-56 w-full bg-border/40 rounded mt-8" />
+  <div className="w-full animate-pulse bg-bg-secondary/20 px-6 py-24">
+    <div className="mx-auto max-w-6xl space-y-4">
+      <div className="h-5 w-1/4 rounded bg-border" />
+      <div className="h-4 w-2/3 rounded bg-border opacity-60" />
+      <div className="mt-8 h-56 w-full rounded bg-border/40" />
     </div>
   </div>
 );
 
+/**
+ * Homepage — cinematic 3D entry → spatial wall → editorial sections
+ */
 export default function Homepage() {
-  const [lensActive, setLensActive] = useState(false);
-  const [lensDone, setLensDone] = useState(false);
-
   useEffect(() => {
     const styleTag = document.createElement("style");
     styleTag.innerHTML = `
@@ -37,37 +46,15 @@ export default function Homepage() {
     };
   }, []);
 
-  // Trigger lens once when scrolling past hero
-  useEffect(() => {
-    if (lensDone) return;
-
-    const onScroll = () => {
-      if (window.scrollY > window.innerHeight * 0.65) {
-        setLensActive(true);
-      }
-    };
-
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, [lensDone]);
-
-  const handleLensComplete = useCallback(() => {
-    setLensDone(true);
-    setLensActive(false);
-  }, []);
-
   return (
     <>
-      <HeroSection />
+      {/* 1. Immersive 3D — Through the Lens */}
+      <ThroughTheLensHero />
 
-      <CameraLensTransition
-        active={lensActive}
-        onComplete={handleLensComplete}
-      />
-
-      {/* 4D Portfolio Wall always in flow */}
+      {/* 2. Interactive spatial portfolio wall */}
       <PortfolioWall />
 
+      {/* 3. Editorial storytelling blocks */}
       <Suspense fallback={<SectionSkeleton />}>
         <PhotographyShowcase />
       </Suspense>
