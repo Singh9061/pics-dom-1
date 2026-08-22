@@ -173,7 +173,7 @@ export default function About() {
           </p>
           <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
             <Link
-              to="/contact"
+              to="/reserve"
               className="group inline-flex h-12 w-52 items-center justify-center gap-4 bg-gold px-8 text-xs font-semibold uppercase tracking-[0.2em] text-white shadow-md shadow-black/20 transition-colors duration-300 hover:bg-gold-hover"
             >
               <span>Reserve Date</span>

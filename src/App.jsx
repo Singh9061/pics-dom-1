@@ -8,6 +8,7 @@ const Homepage = lazy(() => import("./pages/Homepage"));
 const About = lazy(() => import("./pages/About"));
 const ContactSection = lazy(() => import("./pages/ContactSection"));
 const GridGallery = lazy(() => import("./pages/Gallery"));
+const ReserveDate = lazy(() => import("./pages/ReserveDate"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const PageLoader = () => (
@@ -18,7 +19,6 @@ const PageLoader = () => (
 
 function AppRoutes() {
   const location = useLocation();
-  // Always show splash when landing on home
   const [showSplash, setShowSplash] = useState(() => location.pathname === "/");
 
   const handleSplashFinish = () => {
@@ -38,6 +38,7 @@ function AppRoutes() {
             <Route path="about" element={<About />} />
             <Route path="gallery" element={<GridGallery />} />
             <Route path="contact" element={<ContactSection />} />
+            <Route path="reserve" element={<ReserveDate />} />
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>
