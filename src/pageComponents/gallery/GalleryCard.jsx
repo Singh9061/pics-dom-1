@@ -1,158 +1,43 @@
-import React, { memo } from "react";
-import { FiMaximize2 } from "react-icons/fi";
+import React from "react";
+import Tilt3D from "../../components/Tilt3D";
 
-const GalleryCard = memo(function GalleryCard({ item, index, isWideFeature, onSelect }) {
-    const isPriority = index < 2;
+export default function GalleryCard({ item, index, isWideFeature, onSelect }) {
+  const src = item.thumbAvif || item.img;
 
-    return (
-        <article
-            onClick={() => onSelect(index)}
-            className={`
-                group
-                relative
-                w-full
-                overflow-hidden
-                cursor-zoom-in
-                border
-                border-border
-                bg-card
-                shadow-card
-                rounded-(--radius)
-                transition-colors
-                duration-300
-                hover:border-gold/60
-                [content-visibility:auto]
-                [contain-intrinsic-size:420px]
-                ${isWideFeature
-                    ? "sm:col-span-2 aspect-16/10"
-                    : "col-span-1 aspect-4/5"
-                }
-            `}
+  return (
+    <div
+      className={`${isWideFeature ? "sm:col-span-2" : ""}`}
+      style={{ perspective: "1000px" }}
+    >
+      <Tilt3D max={10} scale={1.03}>
+        <button
+          type="button"
+          onClick={() => onSelect(index)}
+          className="group relative block w-full overflow-hidden bg-surface text-left shadow-[0_16px_40px_rgba(0,0,0,0.2)]"
+          style={{ aspectRatio: isWideFeature ? "16/10" : "3/4" }}
         >
-            {/* Decorative Inner Accent Frame */}
-            <div
-                className="
-                    pointer-events-none
-                    absolute
-                    inset-0
-                    z-10
-                    rounded-(--radius)
-                    border
-                    border-white/20
-                    transition-colors
-                    duration-300
-                    group-hover:border-gold/30
-                "
-            />
-
-            {/* Direct High-Quality Image Loading */}
-            <img
-                src={item.img}
-                alt={item.alt}
-                loading={isPriority ? "eager" : "lazy"}
-                fetchPriority={index === 0 ? "high" : "low"}
-                decoding="async"
-                draggable={false}
-                className="
-                    h-full
-                    w-full
-                    select-none
-                    object-cover
-                    transform-gpu
-                    transition-transform
-                    duration-500
-                    ease-[cubic-bezier(.22,.61,.36,1)]
-                    group-hover:scale-[1.03]
-                    brightness-[0.97]
-                    group-hover:brightness-100
-                "
-            />
-
-            {/* Dark Editorial Overlay */}
-            <div
-                className="
-                    absolute
-                    inset-0
-                    z-20
-                    flex
-                    flex-col
-                    justify-end
-                    bg-linear-to-t
-                    from-black/85
-                    via-black/20
-                    to-transparent
-                    opacity-0
-                    transition-opacity
-                    duration-300
-                    group-hover:opacity-100
-                "
-            >
-                <div
-                    className="
-                        flex
-                        items-end
-                        justify-between
-                        p-6
-                        text-white
-                    "
-                >
-                    <div className="max-w-[85%] space-y-1">
-                        <span
-                            className="
-                                block
-                                font-serif
-                                text-[10px]
-                                uppercase
-                                tracking-[0.25em]
-                                text-gold
-                            "
-                        >
-                            Chapter {index + 1}
-                        </span>
-
-                        <p
-                            className="
-                                truncate
-                                font-serif
-                                text-xs
-                                font-light
-                                tracking-wide
-                                text-neutral-100
-                                sm:text-sm
-                            "
-                        >
-                            {item.alt}
-                        </p>
-                    </div>
-
-                    <div
-                        className="
-                            ml-4
-                            flex
-                            h-10
-                            w-10
-                            shrink-0
-                            items-center
-                            justify-center
-                            rounded-full
-                            border
-                            border-white/15
-                            bg-white/10
-                            text-white
-                            backdrop-blur-sm
-                            transition-transform
-                            duration-300
-                            group-hover:scale-110
-                        "
-                    >
-                        <FiMaximize2 size={14} />
-                    </div>
-                </div>
-            </div>
-        </article>
-    );
-});
-
-GalleryCard.displayName = "GalleryCard";
-
-export default GalleryCard;
+          <img
+            src={src}
+            alt={item.title || "Gallery"}
+            loading="lazy"
+            decoding="async"
+            className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.05]"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 transition-opacity duration-400 group-hover:opacity-100" />
+          <div className="absolute inset-x-0 bottom-0 translate-y-2 p-5 opacity-0 transition-all duration-400 group-hover:translate-y-0 group-hover:opacity-100">
+            {item.tag && (
+              <span className="mb-1 block text-[10px] uppercase tracking-[0.25em] text-gold">
+                {item.tag}
+              </span>
+            )}
+            {item.title && (
+              <span className="font-serif text-lg font-light text-white">
+                {item.title}
+              </span>
+            )}
+          </div>
+        </button>
+      </Tilt3D>
+    </div>
+  );
+}

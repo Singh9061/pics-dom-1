@@ -1,6 +1,7 @@
 import { lazy, Suspense, useEffect } from "react";
 import HeroSection from "../pageComponents/homepage/Herosection";
 import PortfolioWall from "../pageComponents/homepage/PortfolioWall";
+import SectionField3D from "../components/three/SectionField3D";
 
 const PhotographyShowcase = lazy(() =>
   import("../pageComponents/homepage/PhotographyShowcase")
@@ -45,19 +46,23 @@ export default function Homepage() {
 
   return (
     <>
-      {/* Original hero — unchanged */}
+      {/* Hero — untouched */}
       <HeroSection />
 
-      {/* Heavy 3D — Through the Lens */}
+      {/* Heavy 3D Through the Lens */}
       <PortfolioWall />
 
       <Suspense fallback={<SectionSkeleton />}>
         <PhotographyShowcase />
       </Suspense>
 
+      <SectionField3D height="h-[240px] md:h-[320px]" density="high" />
+
       <Suspense fallback={<SectionSkeleton />}>
         <AlbumCollection />
       </Suspense>
+
+      <SectionField3D height="h-[200px] md:h-[280px]" density="med" />
 
       <Suspense fallback={<SectionSkeleton />}>
         <FilmsSection />
@@ -66,6 +71,8 @@ export default function Homepage() {
       <Suspense fallback={<SectionSkeleton />}>
         <InstagramFeed />
       </Suspense>
+
+      <SectionField3D height="h-[180px] md:h-[240px]" density="med" />
 
       <Suspense fallback={<SectionSkeleton />}>
         <MoreAboutSection />

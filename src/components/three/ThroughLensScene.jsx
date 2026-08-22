@@ -1,6 +1,14 @@
 import { useRef, useMemo, useState, useCallback, useEffect } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import { useTexture } from "@react-three/drei";
+import {
+  EffectComposer,
+  Bloom,
+  Vignette,
+  ChromaticAberration,
+  Noise,
+} from "@react-three/postprocessing";
+import { BlendFunction } from "postprocessing";
 import * as THREE from "three";
 import { MASTER_GALLERY_ARCHIVE } from "../../data/galleryData";
 
@@ -13,7 +21,6 @@ function configureTexture(tex) {
   tex.anisotropy = 2;
 }
 
-/** Single framed photo in the spatial field */
 function FrameCard({
   photo,
   hoveredId,
@@ -44,7 +51,6 @@ function FrameCard({
     const isH = hoveredId === photo.id;
     const isA = activeId === photo.id;
 
-    // Intro: scale + fade in staggered
     const appear = THREE.MathUtils.clamp((introT - photo.i * 0.04) * 2.2, 0, 1);
     const appearE = appear * appear * (3 - 2 * appear);
 
@@ -77,9 +83,7 @@ function FrameCard({
     if (group.current) {
       group.current.position.z = curZ.current;
       group.current.scale.setScalar(Math.max(0.001, curScale.current));
-      // subtle float
-      group.current.position.y =
-        photo.y + Math.sin(t * 0.55 + phase) * 0.08;
+      group.current.position.y = photo.y + Math.sin(t * 0.55 + phase) * 0.08;
       group.current.rotation.z =
         photo.rotZ + Math.sin(t * 0.3 + phase) * 0.015;
     }
@@ -92,17 +96,14 @@ function FrameCard({
       position={[photo.x, photo.y, zBase]}
       rotation={[0, photo.rotY, photo.rotZ]}
     >
-      {/* Gold outer frame */}
       <mesh position={[0, 0, -0.03]}>
         <planeGeometry args={[w + 0.14, h + 0.14]} />
         <meshBasicMaterial color={GOLD} transparent opacity={0.55} />
       </mesh>
-      {/* Dark mat */}
       <mesh position={[0, 0, -0.02]}>
         <planeGeometry args={[w + 0.08, h + 0.08]} />
         <meshBasicMaterial color="#0a0908" />
       </mesh>
-      {/* Photo */}
       <mesh
         onPointerOver={(e) => {
           e.stopPropagation();
@@ -132,7 +133,6 @@ function FrameCard({
   );
 }
 
-/** Rotating gold aperture in front of camera during intro */
 function ApertureIntro({ progress }) {
   const ref = useRef();
   const blades = 8;
@@ -141,10 +141,8 @@ function ApertureIntro({ progress }) {
     if (ref.current) ref.current.rotation.z = state.clock.elapsedTime * 0.35;
   });
 
-  // progress 0 = closed-ish, 1 = fully open / gone
   const open = 0.2 + progress * 2.4;
   const opacity = 1 - Math.pow(progress, 1.4);
-
   if (progress >= 0.98) return null;
 
   return (
@@ -227,9 +225,6 @@ function Dust({ count = 120 }) {
   );
 }
 
-/**
- * Heavy 3D Through the Lens scene
- */
 export default function ThroughLensScene({
   entering,
   setEntering,
@@ -247,7 +242,6 @@ export default function ThroughLensScene({
   const portalProgress = useRef(0);
   const orbit = useRef(0);
 
-  // Cylindrical / depth photo field — denser, more dramatic
   const photos = useMemo(() => {
     return MASTER_GALLERY_ARCHIVE.slice(0, 18).map((item, i) => {
       const cols = 6;
@@ -260,20 +254,10 @@ export default function ThroughLensScene({
       const y = (row - 1) * 3.2 + (((i * 13) % 7) - 3) * 0.12;
       const rotY = -angle * 0.35;
       const rotZ = (((i * 7) % 11) - 5) * 0.012;
-      return {
-        ...item,
-        i,
-        x,
-        y,
-        z,
-        baseZ: z,
-        rotY,
-        rotZ,
-      };
+      return { ...item, i, x, y, z, baseZ: z, rotY, rotZ };
     });
   }, []);
 
-  // Intro ramp
   useEffect(() => {
     let raf;
     const start = performance.now();
@@ -335,7 +319,6 @@ export default function ThroughLensScene({
     );
 
     if (!entering) {
-      // Slow auto-orbit + mouse look + intro push-in
       orbit.current += dt * 0.08;
       const introPull = THREE.MathUtils.lerp(18, 12, introT);
       camera.position.x =
@@ -394,6 +377,16 @@ export default function ThroughLensScene({
           introT={introT}
         />
       ))}
+
+      <EffectComposer multisampling={0}>
+        <Bloom intensity={0.45} luminanceThreshold={0.65} mipmapBlur />
+        <ChromaticAberration
+          offset={[0.0009, 0.0009]}
+          blendFunction={BlendFunction.NORMAL}
+        />
+        <Vignette offset={0.25} darkness={0.55} />
+        <Noise opacity={0.025} />
+      </EffectComposer>
     </>
   );
 }

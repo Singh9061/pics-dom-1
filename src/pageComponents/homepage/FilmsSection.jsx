@@ -5,6 +5,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { c1_pic4, c1_pic6 } from "../../Assets/picture/client1";
 import { c2_pic11, c2_pic12 } from "../../Assets/picture/client2";
+import Tilt3D from "../../components/Tilt3D";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -40,7 +41,6 @@ const films = [
 ];
 
 export default function FilmsSection() {
-  const sectionRef = useRef(null);
   const cardsRef = useRef([]);
   const [isMobile, setIsMobile] = useState(true);
 
@@ -77,70 +77,63 @@ export default function FilmsSection() {
   }, [isMobile]);
 
   return (
-    <section
-      ref={sectionRef}
-      className="relative w-full bg-text py-28 px-6 md:px-12 lg:px-16 z-10 overflow-hidden"
-    >
+    <section className="relative z-10 w-full overflow-hidden bg-text px-6 py-28 md:px-12 lg:px-16">
       <div className="mx-auto max-w-7xl">
-
-        <div className="mb-16 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6">
+        <div className="mb-16 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <span className="text-[11px] uppercase tracking-[0.35em] text-gold block mb-4 font-medium">
+            <span className="mb-4 block text-[11px] font-medium uppercase tracking-[0.35em] text-gold">
               Cinematic Stories
             </span>
-            <h2 className="font-serif text-3xl font-light tracking-wide sm:text-4xl md:text-5xl text-white leading-tight">
-              Showcasing <span className="italic text-gold font-normal">Films</span>
+            <h2 className="font-serif text-3xl font-light leading-tight tracking-wide text-white sm:text-4xl md:text-5xl">
+              Showcasing <span className="font-normal italic text-gold">Films</span>
             </h2>
           </div>
           <Link
             to="/gallery"
-            className="text-[11px] uppercase tracking-[0.25em] text-white/50 hover:text-gold transition-colors duration-300 self-start sm:self-auto"
+            className="self-start text-[11px] uppercase tracking-[0.25em] text-white/50 transition-colors duration-300 hover:text-gold sm:self-auto"
           >
             View all films →
           </Link>
         </div>
 
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4" style={{ perspective: "1100px" }}>
           {films.map(({ id, title, subtitle, image, duration }, index) => (
             <div
               key={id}
               ref={(el) => (cardsRef.current[index] = el)}
-              className={`group relative aspect-[3/4] overflow-hidden cursor-pointer ${isMobile ? "opacity-100" : "opacity-0"}`}
+              className={isMobile ? "opacity-100" : "opacity-0"}
             >
-              <img
-                src={image}
-                alt={title}
-                loading="lazy"
-                decoding="async"
-                className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
-              />
-
-              {/* Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent" />
-
-              {/* Play button */}
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="flex h-14 w-14 items-center justify-center rounded-full border border-white/30 bg-white/10 backdrop-blur-md text-white transition-all duration-400 group-hover:scale-110 group-hover:bg-gold group-hover:border-gold">
-                  <FiPlay size={20} className="ml-0.5" />
+              <Tilt3D max={16} scale={1.05}>
+                <div className="group relative aspect-[3/4] cursor-pointer overflow-hidden shadow-[0_25px_60px_rgba(0,0,0,0.45)]">
+                  <img
+                    src={image}
+                    alt={title}
+                    loading="lazy"
+                    decoding="async"
+                    className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.06]"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent" />
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="flex h-14 w-14 items-center justify-center rounded-full border border-white/30 bg-white/10 text-white backdrop-blur-md transition-all duration-400 group-hover:scale-110 group-hover:border-gold group-hover:bg-gold">
+                      <FiPlay size={20} className="ml-0.5" />
+                    </div>
+                  </div>
+                  <div className="absolute inset-x-0 bottom-0 p-5">
+                    <span className="mb-1 block text-[10px] uppercase tracking-[0.2em] text-gold/90">
+                      {duration}
+                    </span>
+                    <h3 className="font-serif text-lg font-light tracking-wide text-white">
+                      {title}
+                    </h3>
+                    <p className="mt-0.5 text-[11px] tracking-wide text-white/50">
+                      {subtitle}
+                    </p>
+                  </div>
                 </div>
-              </div>
-
-              {/* Meta */}
-              <div className="absolute bottom-0 inset-x-0 p-5">
-                <span className="text-[10px] uppercase tracking-[0.2em] text-gold/90 block mb-1">
-                  {duration}
-                </span>
-                <h3 className="font-serif text-lg font-light tracking-wide text-white">
-                  {title}
-                </h3>
-                <p className="text-[11px] text-white/50 tracking-wide mt-0.5">
-                  {subtitle}
-                </p>
-              </div>
+              </Tilt3D>
             </div>
           ))}
         </div>
-
       </div>
     </section>
   );
