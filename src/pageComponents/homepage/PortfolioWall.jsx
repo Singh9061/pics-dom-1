@@ -5,7 +5,7 @@ import PortfolioScene from "../../components/three/PortfolioScene";
 import { useWebGLPerf, useCanvasVisibility } from "../../hooks/useWebGLPerf";
 
 /**
- * Spatial 3D Portfolio Wall — performance-aware canvas
+ * Spatial 3D Portfolio Wall — deferred + visibility-aware
  */
 export default function PortfolioWall() {
   const navigate = useNavigate();
@@ -21,51 +21,56 @@ export default function PortfolioWall() {
   return (
     <section
       ref={sectionRef}
-      className="relative w-full h-[100vh] min-h-[640px] overflow-hidden bg-black select-none"
+      className="relative h-[100vh] min-h-[640px] w-full overflow-hidden bg-black select-none"
     >
       <div className="pointer-events-none absolute inset-0 z-20 bg-[radial-gradient(ellipse_at_center,transparent_0%,rgba(0,0,0,0.55)_100%)]" />
 
-      <div className="absolute top-10 left-0 right-0 z-30 px-6 text-center pointer-events-none">
-        <p className="text-[10px] uppercase tracking-[0.4em] text-white/50 mb-2">
+      <div className="pointer-events-none absolute top-10 left-0 right-0 z-30 px-6 text-center">
+        <p className="mb-2 text-[10px] uppercase tracking-[0.4em] text-white/50">
           Spatial Archive
         </p>
-        <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl font-light text-white tracking-wide">
+        <h2 className="font-serif text-2xl font-light tracking-wide text-white sm:text-3xl md:text-4xl">
           The Wall
         </h2>
-        <p className="mt-3 text-[11px] text-white/40 tracking-wide hidden sm:block">
+        <p className="mt-3 hidden text-[11px] tracking-wide text-white/40 sm:block">
           Move mouse · Scroll depth · Hover · Click to enter frame
         </p>
       </div>
 
-      <Canvas
-        camera={{ position: [0, 0, 14], fov: 42, near: 0.1, far: 80 }}
-        dpr={[1, perf.maxDpr]}
-        frameloop={visible ? "always" : "never"}
-        gl={{
-          antialias: perf.antialias,
-          alpha: false,
-          powerPreference: "high-performance",
-          stencil: false,
-          depth: true,
-        }}
-        style={{ width: "100%", height: "100%" }}
-      >
-        <color attach="background" args={["#000000"]} />
-        <Suspense fallback={null}>
-          <PortfolioScene
-            entering={entering}
-            setEntering={setEntering}
-            onEnterComplete={handleEnterComplete}
-            perf={perf}
-          />
-        </Suspense>
-      </Canvas>
+      {/* Only create WebGL context while section is (or was) in view */}
+      {visible || entering ? (
+        <Canvas
+          camera={{ position: [0, 0, 14], fov: 42, near: 0.1, far: 80 }}
+          dpr={[1, perf.maxDpr]}
+          frameloop={visible || entering ? "always" : "never"}
+          gl={{
+            antialias: perf.antialias,
+            alpha: false,
+            powerPreference: "high-performance",
+            stencil: false,
+            depth: true,
+          }}
+          style={{ width: "100%", height: "100%" }}
+        >
+          <color attach="background" args={["#000000"]} />
+          <Suspense fallback={null}>
+            <PortfolioScene
+              entering={entering}
+              setEntering={setEntering}
+              onEnterComplete={handleEnterComplete}
+              perf={perf}
+            />
+          </Suspense>
+        </Canvas>
+      ) : (
+        <div className="absolute inset-0 bg-black" />
+      )}
 
-      <div className="absolute bottom-8 left-0 right-0 z-30 flex justify-center pointer-events-auto">
+      <div className="pointer-events-auto absolute bottom-8 left-0 right-0 z-30 flex justify-center">
         <button
           type="button"
           onClick={() => navigate("/gallery")}
-          className="text-[10px] uppercase tracking-[0.35em] text-white/60 hover:text-gold transition-colors duration-300 border border-white/15 px-6 py-3 hover:border-gold/40"
+          className="border border-white/15 px-6 py-3 text-[10px] uppercase tracking-[0.35em] text-white/60 transition-colors duration-300 hover:border-gold/40 hover:text-gold"
         >
           Enter Full Archive
         </button>

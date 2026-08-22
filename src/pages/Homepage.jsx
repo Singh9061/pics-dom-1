@@ -1,7 +1,11 @@
-import { lazy, Suspense, useEffect, useState, useCallback } from "react";
+import { lazy, Suspense, useEffect, useState, useCallback, useRef } from "react";
 import HeroSection from "../pageComponents/homepage/Herosection";
 import CameraLensTransition from "../pageComponents/homepage/CameraLensTransition";
-import PortfolioWall from "../pageComponents/homepage/PortfolioWall";
+
+// Heavy WebGL wall — load only when approaching viewport
+const PortfolioWall = lazy(() =>
+  import("../pageComponents/homepage/PortfolioWall")
+);
 
 const PhotographyShowcase = lazy(() =>
   import("../pageComponents/homepage/PhotographyShowcase")
@@ -29,25 +33,24 @@ const SectionSkeleton = () => (
   </div>
 );
 
+const WallPlaceholder = () => (
+  <div className="relative h-[100vh] min-h-[640px] w-full bg-black" aria-hidden />
+);
+
 export default function Homepage() {
   const [lensActive, setLensActive] = useState(false);
   const [lensDone, setLensDone] = useState(false);
+  const [mountWall, setMountWall] = useState(false);
+  const wallSentinelRef = useRef(null);
 
   useEffect(() => {
-    const styleTag = document.createElement("style");
-    styleTag.innerHTML = `
-      html {
-        scroll-behavior: smooth;
-        -webkit-overflow-scrolling: touch;
-      }
-    `;
-    document.head.appendChild(styleTag);
+    document.documentElement.style.scrollBehavior = "smooth";
     return () => {
-      if (styleTag.parentNode) document.head.removeChild(styleTag);
+      document.documentElement.style.scrollBehavior = "";
     };
   }, []);
 
-  // Trigger lens once when scrolling past hero
+  // Lens transition once past hero
   useEffect(() => {
     if (lensDone) return;
 
@@ -60,6 +63,28 @@ export default function Homepage() {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, [lensDone]);
+
+  // Defer WebGL PortfolioWall until near viewport
+  useEffect(() => {
+    const el = wallSentinelRef.current;
+    if (!el || typeof IntersectionObserver === "undefined") {
+      setMountWall(true);
+      return;
+    }
+
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setMountWall(true);
+          io.disconnect();
+        }
+      },
+      { rootMargin: "200px 0px" }
+    );
+
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
 
   const handleLensComplete = useCallback(() => {
     setLensDone(true);
@@ -75,7 +100,15 @@ export default function Homepage() {
         onComplete={handleLensComplete}
       />
 
-      <PortfolioWall />
+      <div ref={wallSentinelRef}>
+        {mountWall ? (
+          <Suspense fallback={<WallPlaceholder />}>
+            <PortfolioWall />
+          </Suspense>
+        ) : (
+          <WallPlaceholder />
+        )}
+      </div>
 
       <Suspense fallback={<SectionSkeleton />}>
         <PhotographyShowcase />
