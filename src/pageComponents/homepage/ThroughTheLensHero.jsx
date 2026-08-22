@@ -1,26 +1,34 @@
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import { Link } from "react-router-dom";
 import { FiChevronDown, FiArrowRight } from "react-icons/fi";
 import LensHeroScene from "../../components/three/LensHeroScene";
+import { useWebGLPerf, useCanvasVisibility } from "../../hooks/useWebGLPerf";
 
 /**
- * Full-viewport cinematic 3D hero — Through the Lens
- * Professional WebGL experience with parallax frames + aperture motif
+ * Full-viewport cinematic 3D hero — performance-aware
  */
 export default function ThroughTheLensHero() {
+  const sectionRef = useRef(null);
+  const perf = useWebGLPerf();
+  const visible = useCanvasVisibility(sectionRef);
+
   const [intro, setIntro] = useState(0);
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    // Intro open animation (aperture reveals)
+    if (perf.reduceMotion) {
+      setIntro(1);
+      setReady(true);
+      return;
+    }
+
     const start = performance.now();
     const duration = 2200;
     let raf;
 
     const tick = (now) => {
       const t = Math.min(1, (now - start) / duration);
-      // ease-out cubic
       const eased = 1 - Math.pow(1 - t, 3);
       setIntro(eased);
       if (t < 1) raf = requestAnimationFrame(tick);
@@ -29,29 +37,34 @@ export default function ThroughTheLensHero() {
 
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, []);
+  }, [perf.reduceMotion]);
 
   return (
-    <section className="relative h-screen w-full min-h-[640px] overflow-hidden bg-[#050403] select-none">
-      {/* WebGL layer */}
+    <section
+      ref={sectionRef}
+      className="relative h-screen w-full min-h-[640px] overflow-hidden bg-[#050403] select-none"
+    >
+      {/* WebGL — only mounts render loop while in view */}
       <div className="absolute inset-0 z-0">
         <Canvas
-          camera={{ position: [0, 0, 11.5], fov: 40, near: 0.1, far: 60 }}
-          dpr={[1, 1.6]}
+          camera={{ position: [0, 0, 11.5], fov: 40, near: 0.1, far: 40 }}
+          dpr={[1, perf.maxDpr]}
+          frameloop={visible ? "always" : "never"}
           gl={{
-            antialias: true,
+            antialias: perf.antialias,
             alpha: false,
             powerPreference: "high-performance",
+            stencil: false,
+            depth: true,
           }}
           style={{ width: "100%", height: "100%" }}
         >
           <Suspense fallback={null}>
-            <LensHeroScene introProgress={intro} />
+            <LensHeroScene introProgress={intro} perf={perf} />
           </Suspense>
         </Canvas>
       </div>
 
-      {/* Cinematic vignette */}
       <div
         className="pointer-events-none absolute inset-0 z-10"
         style={{
@@ -60,10 +73,8 @@ export default function ThroughTheLensHero() {
         }}
       />
 
-      {/* Top gradient for navbar readability */}
       <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-40 bg-gradient-to-b from-black/70 to-transparent" />
 
-      {/* Editorial copy */}
       <div
         className={`relative z-20 flex h-full flex-col items-center justify-center px-6 text-center transition-all duration-1000 ${
           ready ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
@@ -104,7 +115,6 @@ export default function ThroughTheLensHero() {
         </div>
       </div>
 
-      {/* Scroll cue */}
       <div
         className={`absolute bottom-8 left-0 right-0 z-20 flex flex-col items-center gap-2 text-white/35 transition-opacity duration-1000 ${
           ready ? "opacity-100" : "opacity-0"

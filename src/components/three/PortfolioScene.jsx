@@ -5,37 +5,43 @@ import PhotoCard from "./PhotoCard";
 import * as THREE from "three";
 
 /**
- * Main 3D scene for The Wall
+ * Main 3D scene for The Wall — quality-aware photo count
  */
-export default function PortfolioScene({ entering, setEntering, onEnterComplete }) {
+export default function PortfolioScene({
+  entering,
+  setEntering,
+  onEnterComplete,
+  perf,
+}) {
   const groupRef = useRef();
-  const { camera, gl, size } = useThree();
+  const { camera, gl } = useThree();
   const [hoveredId, setHoveredId] = useState(null);
   const [activeId, setActiveId] = useState(null);
 
-  // Smooth targets
   const mouse = useRef({ x: 0, y: 0 });
   const mouseSmooth = useRef({ x: 0, y: 0 });
   const depthTarget = useRef(0);
   const depthSmooth = useRef(0);
   const portalProgress = useRef(0);
 
-  // Build photo positions (deterministic scatter)
+  const photoCount = perf?.isLowEnd ? 9 : 16;
+
   const photos = useMemo(() => {
-    return MASTER_GALLERY_ARCHIVE.slice(0, 16).map((item, i) => {
-      const col = i % 4;
-      const row = Math.floor(i / 4);
+    return MASTER_GALLERY_ARCHIVE.slice(0, photoCount).map((item, i) => {
+      const cols = photoCount <= 9 ? 3 : 4;
+      const col = i % cols;
+      const row = Math.floor(i / cols);
       const jitterX = ((i * 17) % 11) - 5;
       const jitterY = ((i * 13) % 9) - 4;
-      const x = (col - 1.5) * 3.4 + jitterX * 0.12;
+      const x = (col - (cols - 1) / 2) * 3.4 + jitterX * 0.12;
       const y = (row - 1.5) * 3.1 + jitterY * 0.1;
       const z = ((i * 37) % 21) * 0.55 - 5.5;
       return { ...item, x, y, z, baseZ: z };
     });
-  }, []);
+  }, [photoCount]);
 
-  // Mouse + wheel listeners
   useEffect(() => {
+    gl.shadowMap.enabled = false;
     const el = gl.domElement;
 
     const onMove = (e) => {
@@ -63,7 +69,6 @@ export default function PortfolioScene({ entering, setEntering, onEnterComplete 
     };
   }, [gl, entering]);
 
-  // Portal start
   const handleEnter = useCallback(
     (id) => {
       if (entering) return;
@@ -74,11 +79,9 @@ export default function PortfolioScene({ entering, setEntering, onEnterComplete 
     [entering, setEntering]
   );
 
-  // Animation loop
-  useFrame((state, delta) => {
+  useFrame((_, delta) => {
     const dt = Math.min(delta, 0.05);
 
-    // Smooth mouse & depth
     mouseSmooth.current.x = THREE.MathUtils.damp(
       mouseSmooth.current.x,
       mouse.current.x,
@@ -99,16 +102,14 @@ export default function PortfolioScene({ entering, setEntering, onEnterComplete 
     );
 
     if (!entering) {
-      // Free camera look
       camera.position.x = mouseSmooth.current.x * 2.8;
       camera.position.y = -mouseSmooth.current.y * 1.8;
       camera.position.z = 14 + depthSmooth.current;
       camera.lookAt(0, 0, depthSmooth.current * 0.4);
     } else {
-      // Portal: fly into selected photo
       portalProgress.current = Math.min(1, portalProgress.current + dt * 0.85);
       const t = portalProgress.current;
-      const ease = t * t * (3 - 2 * t); // smoothstep
+      const ease = t * t * (3 - 2 * t);
 
       const target = photos.find((p) => p.id === activeId);
       if (target) {
@@ -124,17 +125,14 @@ export default function PortfolioScene({ entering, setEntering, onEnterComplete 
         camera.updateProjectionMatrix();
       }
 
-      if (t >= 1) {
-        onEnterComplete?.();
-      }
+      if (t >= 1) onEnterComplete?.();
     }
   });
 
   return (
     <>
-      <ambientLight intensity={0.55} />
-      <directionalLight position={[8, 12, 10]} intensity={0.9} />
-      <directionalLight position={[-6, -4, 6]} intensity={0.25} />
+      {/* BasicMaterial cards → ambient is enough */}
+      <ambientLight intensity={1} />
 
       <group ref={groupRef}>
         {photos.map((photo) => (
@@ -150,7 +148,6 @@ export default function PortfolioScene({ entering, setEntering, onEnterComplete 
         ))}
       </group>
 
-      {/* Soft fog for depth */}
       <fog attach="fog" args={["#000000", 12, 32]} />
     </>
   );

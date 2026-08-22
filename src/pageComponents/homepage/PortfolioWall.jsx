@@ -1,17 +1,17 @@
-import { Suspense, useState, useCallback } from "react";
+import { Suspense, useState, useCallback, useRef } from "react";
 import { Canvas } from "@react-three/fiber";
 import { useNavigate } from "react-router-dom";
 import PortfolioScene from "../../components/three/PortfolioScene";
+import { useWebGLPerf, useCanvasVisibility } from "../../hooks/useWebGLPerf";
 
 /**
- * Phase 1 — True 3D Portfolio Wall
- * - Spatial photo field in WebGL
- * - Mouse look + wheel depth
- * - Hover forward / neighbors back
- * - Click → portal zoom into photo → /gallery
+ * Spatial 3D Portfolio Wall — performance-aware canvas
  */
 export default function PortfolioWall() {
   const navigate = useNavigate();
+  const sectionRef = useRef(null);
+  const perf = useWebGLPerf();
+  const visible = useCanvasVisibility(sectionRef);
   const [entering, setEntering] = useState(false);
 
   const handleEnterComplete = useCallback(() => {
@@ -19,8 +19,10 @@ export default function PortfolioWall() {
   }, [navigate]);
 
   return (
-    <section className="relative w-full h-[100vh] min-h-[640px] overflow-hidden bg-black select-none">
-      {/* UI overlay */}
+    <section
+      ref={sectionRef}
+      className="relative w-full h-[100vh] min-h-[640px] overflow-hidden bg-black select-none"
+    >
       <div className="pointer-events-none absolute inset-0 z-20 bg-[radial-gradient(ellipse_at_center,transparent_0%,rgba(0,0,0,0.55)_100%)]" />
 
       <div className="absolute top-10 left-0 right-0 z-30 px-6 text-center pointer-events-none">
@@ -36,12 +38,15 @@ export default function PortfolioWall() {
       </div>
 
       <Canvas
-        camera={{ position: [0, 0, 14], fov: 42, near: 0.1, far: 200 }}
-        dpr={[1, 1.75]}
+        camera={{ position: [0, 0, 14], fov: 42, near: 0.1, far: 80 }}
+        dpr={[1, perf.maxDpr]}
+        frameloop={visible ? "always" : "never"}
         gl={{
-          antialias: true,
+          antialias: perf.antialias,
           alpha: false,
           powerPreference: "high-performance",
+          stencil: false,
+          depth: true,
         }}
         style={{ width: "100%", height: "100%" }}
       >
@@ -51,6 +56,7 @@ export default function PortfolioWall() {
             entering={entering}
             setEntering={setEntering}
             onEnterComplete={handleEnterComplete}
+            perf={perf}
           />
         </Suspense>
       </Canvas>

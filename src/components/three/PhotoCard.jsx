@@ -1,10 +1,23 @@
-import { useRef, useState, useMemo } from "react";
+import { useRef, useMemo } from "react";
 import { useFrame } from "@react-three/fiber";
 import { useTexture } from "@react-three/drei";
 import * as THREE from "three";
 
+// Shared plane geo — all cards reuse
+const CARD_GEO = new THREE.PlaneGeometry(2.1, 2.8);
+const FRAME_GEO = new THREE.PlaneGeometry(2.16, 2.86);
+
+function configureTexture(tex) {
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.generateMipmaps = true;
+  tex.minFilter = THREE.LinearMipmapLinearFilter;
+  tex.magFilter = THREE.LinearFilter;
+  tex.anisotropy = 1;
+  tex.wrapS = tex.wrapT = THREE.ClampToEdgeWrapping;
+}
+
 /**
- * Single spatial photo card
+ * Spatial photo card — MeshBasicMaterial (no per-fragment lighting)
  */
 export default function PhotoCard({
   photo,
@@ -15,17 +28,11 @@ export default function PhotoCard({
   onEnter,
 }) {
   const meshRef = useRef();
-  const [hovered, setHovered] = useState(false);
+  const matRef = useRef();
 
-  // Load texture (avif supported by modern browsers)
   const texture = useTexture(photo.img);
-  texture.colorSpace = THREE.SRGBColorSpace;
+  useMemo(() => configureTexture(texture), [texture]);
 
-  // Aspect ~ 3/4 portrait
-  const width = 2.1;
-  const height = 2.8;
-
-  // Target transforms
   const targetZ = useRef(photo.baseZ);
   const targetScale = useRef(1);
   const currentZ = useRef(photo.baseZ);
@@ -72,52 +79,44 @@ export default function PhotoCard({
     if (meshRef.current) {
       meshRef.current.position.z = currentZ.current;
       meshRef.current.scale.setScalar(currentScale.current);
-      meshRef.current.material.opacity = currentOpacity.current;
+    }
+    if (matRef.current) {
+      matRef.current.opacity = currentOpacity.current;
     }
   });
 
-  const material = useMemo(
-    () =>
-      new THREE.MeshStandardMaterial({
-        map: texture,
-        transparent: true,
-        roughness: 0.65,
-        metalness: 0.05,
-        side: THREE.FrontSide,
-      }),
-    [texture]
-  );
-
   return (
-    <mesh
-      ref={meshRef}
-      position={[photo.x, photo.y, photo.baseZ]}
-      onPointerOver={(e) => {
-        e.stopPropagation();
-        if (entering) return;
-        setHovered(true);
-        setHoveredId(photo.id);
-        document.body.style.cursor = "pointer";
-      }}
-      onPointerOut={() => {
-        setHovered(false);
-        setHoveredId(null);
-        document.body.style.cursor = "auto";
-      }}
-      onClick={(e) => {
-        e.stopPropagation();
-        if (entering) return;
-        onEnter(photo.id);
-      }}
-    >
-      <planeGeometry args={[width, height]} />
-      <primitive object={material} attach="material" />
-
-      {/* Subtle frame */}
-      <mesh position={[0, 0, -0.01]}>
-        <planeGeometry args={[width + 0.06, height + 0.06]} />
-        <meshBasicMaterial color="#1a1a1a" transparent opacity={0.85} />
+    <group position={[photo.x, photo.y, photo.baseZ]}>
+      <mesh
+        ref={meshRef}
+        geometry={CARD_GEO}
+        onPointerOver={(e) => {
+          e.stopPropagation();
+          if (entering) return;
+          setHoveredId(photo.id);
+          document.body.style.cursor = "pointer";
+        }}
+        onPointerOut={() => {
+          setHoveredId(null);
+          document.body.style.cursor = "auto";
+        }}
+        onClick={(e) => {
+          e.stopPropagation();
+          if (entering) return;
+          onEnter(photo.id);
+        }}
+      >
+        <meshBasicMaterial
+          ref={matRef}
+          map={texture}
+          transparent
+          toneMapped={false}
+        />
       </mesh>
-    </mesh>
+
+      <mesh geometry={FRAME_GEO} position={[0, 0, -0.01]}>
+        <meshBasicMaterial color="#1a1a1a" transparent opacity={0.85} depthWrite={false} />
+      </mesh>
+    </group>
   );
 }
