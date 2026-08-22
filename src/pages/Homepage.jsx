@@ -1,5 +1,6 @@
-import { lazy, Suspense, useEffect } from "react";
-import ThroughTheLensHero from "../pageComponents/homepage/ThroughTheLensHero";
+import { lazy, Suspense, useEffect, useState, useCallback } from "react";
+import HeroSection from "../pageComponents/homepage/Herosection";
+import CameraLensTransition from "../pageComponents/homepage/CameraLensTransition";
 import PortfolioWall from "../pageComponents/homepage/PortfolioWall";
 
 const PhotographyShowcase = lazy(() =>
@@ -28,10 +29,10 @@ const SectionSkeleton = () => (
   </div>
 );
 
-/**
- * Homepage — cinematic 3D entry → spatial wall → editorial sections
- */
 export default function Homepage() {
+  const [lensActive, setLensActive] = useState(false);
+  const [lensDone, setLensDone] = useState(false);
+
   useEffect(() => {
     const styleTag = document.createElement("style");
     styleTag.innerHTML = `
@@ -46,15 +47,36 @@ export default function Homepage() {
     };
   }, []);
 
+  // Trigger lens once when scrolling past hero
+  useEffect(() => {
+    if (lensDone) return;
+
+    const onScroll = () => {
+      if (window.scrollY > window.innerHeight * 0.65) {
+        setLensActive(true);
+      }
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [lensDone]);
+
+  const handleLensComplete = useCallback(() => {
+    setLensDone(true);
+    setLensActive(false);
+  }, []);
+
   return (
     <>
-      {/* 1. Immersive 3D — Through the Lens */}
-      <ThroughTheLensHero />
+      <HeroSection />
 
-      {/* 2. Interactive spatial portfolio wall */}
+      <CameraLensTransition
+        active={lensActive}
+        onComplete={handleLensComplete}
+      />
+
       <PortfolioWall />
 
-      {/* 3. Editorial storytelling blocks */}
       <Suspense fallback={<SectionSkeleton />}>
         <PhotographyShowcase />
       </Suspense>
