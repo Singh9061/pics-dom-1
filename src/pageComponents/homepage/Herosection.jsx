@@ -5,41 +5,16 @@ import { herosection_video } from "../../Assets/video";
 
 export default function HeroSection() {
   const videoRef = useRef(null);
-  const sectionRef = useRef(null);
 
   useEffect(() => {
-    const video = videoRef.current;
-    if (video) {
-      video.play().catch(() => {});
+    if (videoRef.current) {
+      videoRef.current.play().catch(() => {});
     }
   }, []);
 
-  // Pause video when off-screen — big mobile battery / GPU win
-  useEffect(() => {
-    const section = sectionRef.current;
-    const video = videoRef.current;
-    if (!section || !video || typeof IntersectionObserver === "undefined") return;
-
-    const io = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting && entry.intersectionRatio > 0.15) {
-          video.play().catch(() => {});
-        } else {
-          video.pause();
-        }
-      },
-      { threshold: [0, 0.15, 0.5] }
-    );
-
-    io.observe(section);
-    return () => io.disconnect();
-  }, []);
-
   return (
-    <section
-      ref={sectionRef}
-      className="relative flex h-screen w-full items-center justify-center overflow-hidden bg-black transform-gpu"
-    >
+    <section className="relative flex h-screen w-full items-center justify-center overflow-hidden bg-black transform-gpu">
+
       {/* Background Video */}
       <div className="absolute inset-0 z-0 select-none overflow-hidden">
         <video
@@ -48,8 +23,8 @@ export default function HeroSection() {
           loop
           muted
           playsInline
-          preload="metadata"
-          poster="https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1280&q=50"
+          preload="auto"
+          poster="https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1920&q=60"
           className="h-full w-full object-cover opacity-70"
           src={herosection_video}
         />
@@ -60,6 +35,7 @@ export default function HeroSection() {
 
       {/* Content */}
       <div className="relative z-30 mx-auto max-w-4xl px-6 text-center text-white">
+
         <p className="mb-6 text-[11px] uppercase tracking-[0.4em] text-white/70 font-light">
           Wedding Photographers &amp; Filmmakers
         </p>
@@ -98,6 +74,7 @@ export default function HeroSection() {
         <span className="text-[9px] uppercase tracking-[0.3em]">Scroll</span>
         <FiChevronDown size={16} className="animate-bounce" />
       </div>
+
     </section>
   );
 }

@@ -1,4 +1,4 @@
-import { lazy, Suspense, useState, useCallback } from "react";
+import { lazy, Suspense, useState } from "react";
 import { Route, Routes, BrowserRouter, useLocation } from "react-router-dom";
 import Base from "./components/Base";
 import ScrollToTop from "./components/ScrollToTop";
@@ -18,16 +18,17 @@ const PageLoader = () => (
 
 function AppRoutes() {
   const location = useLocation();
+  // Always show splash when landing on home
   const [showSplash, setShowSplash] = useState(() => location.pathname === "/");
 
-  const handleSplashFinish = useCallback(() => {
+  const handleSplashFinish = () => {
     setShowSplash(false);
-  }, []);
+  };
 
   return (
     <>
       {showSplash && location.pathname === "/" && (
-        <SplashScreen onFinish={handleSplashFinish} duration={2800} />
+        <SplashScreen onFinish={handleSplashFinish} duration={5200} />
       )}
 
       <Suspense fallback={<PageLoader />}>
