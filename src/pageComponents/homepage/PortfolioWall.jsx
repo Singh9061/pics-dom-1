@@ -1,14 +1,11 @@
 import { Suspense, useState, useCallback } from "react";
 import { Canvas } from "@react-three/fiber";
 import { useNavigate } from "react-router-dom";
-import PortfolioScene from "../../components/three/PortfolioScene";
+import ThroughLensScene from "../../components/three/ThroughLensScene";
 
 /**
- * Phase 1 — True 3D Portfolio Wall
- * - Spatial photo field in WebGL
- * - Mouse look + wheel depth
- * - Hover forward / neighbors back
- * - Click → portal zoom into photo → /gallery
+ * Through the Lens — heavy cinematic 3D archive
+ * Aperture intro · spatial photo field · mouse orbit · scroll depth · portal enter
  */
 export default function PortfolioWall() {
   const navigate = useNavigate();
@@ -19,24 +16,26 @@ export default function PortfolioWall() {
   }, [navigate]);
 
   return (
-    <section className="relative w-full h-[100vh] min-h-[640px] overflow-hidden bg-black select-none">
-      {/* UI overlay */}
-      <div className="pointer-events-none absolute inset-0 z-20 bg-[radial-gradient(ellipse_at_center,transparent_0%,rgba(0,0,0,0.55)_100%)]" />
+    <section className="relative h-[100vh] min-h-[680px] w-full overflow-hidden bg-[#030201] select-none">
+      {/* Vignette */}
+      <div className="pointer-events-none absolute inset-0 z-20 bg-[radial-gradient(ellipse_at_center,transparent_10%,rgba(0,0,0,0.35)_55%,rgba(0,0,0,0.85)_100%)]" />
 
-      <div className="absolute top-10 left-0 right-0 z-30 px-6 text-center pointer-events-none">
-        <p className="text-[10px] uppercase tracking-[0.4em] text-white/50 mb-2">
+      {/* Title */}
+      <div className="pointer-events-none absolute top-12 left-0 right-0 z-30 px-6 text-center">
+        <p className="mb-3 text-[10px] font-medium uppercase tracking-[0.45em] text-gold/80">
           Spatial Archive
         </p>
-        <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl font-light text-white tracking-wide">
-          The Wall
+        <h2 className="font-serif text-3xl font-light tracking-wide text-white sm:text-4xl md:text-5xl">
+          Through the{" "}
+          <span className="italic font-normal text-gold">Lens</span>
         </h2>
-        <p className="mt-3 text-[11px] text-white/40 tracking-wide hidden sm:block">
-          Move mouse · Scroll depth · Hover · Click to enter frame
+        <p className="mt-4 hidden text-[11px] tracking-[0.2em] text-white/35 sm:block">
+          Move · Scroll depth · Hover · Click a frame to enter
         </p>
       </div>
 
       <Canvas
-        camera={{ position: [0, 0, 14], fov: 42, near: 0.1, far: 200 }}
+        camera={{ position: [0, 0, 18], fov: 48, near: 0.1, far: 80 }}
         dpr={[1, 1.75]}
         gl={{
           antialias: true,
@@ -45,9 +44,8 @@ export default function PortfolioWall() {
         }}
         style={{ width: "100%", height: "100%" }}
       >
-        <color attach="background" args={["#000000"]} />
         <Suspense fallback={null}>
-          <PortfolioScene
+          <ThroughLensScene
             entering={entering}
             setEntering={setEntering}
             onEnterComplete={handleEnterComplete}
@@ -55,11 +53,11 @@ export default function PortfolioWall() {
         </Suspense>
       </Canvas>
 
-      <div className="absolute bottom-8 left-0 right-0 z-30 flex justify-center pointer-events-auto">
+      <div className="pointer-events-auto absolute bottom-10 left-0 right-0 z-30 flex justify-center">
         <button
           type="button"
           onClick={() => navigate("/gallery")}
-          className="text-[10px] uppercase tracking-[0.35em] text-white/60 hover:text-gold transition-colors duration-300 border border-white/15 px-6 py-3 hover:border-gold/40"
+          className="border border-gold/30 bg-black/30 px-8 py-3 text-[10px] uppercase tracking-[0.35em] text-white/70 backdrop-blur-sm transition-all duration-400 hover:border-gold hover:text-gold"
         >
           Enter Full Archive
         </button>
