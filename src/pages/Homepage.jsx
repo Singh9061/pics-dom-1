@@ -1,6 +1,6 @@
 import { lazy, Suspense, useEffect } from "react";
 import HeroSection from "../pageComponents/homepage/Herosection";
-import PortfolioWall from "../pageComponents/homepage/PortfolioWall";
+import FloatingLegacy from "../pageComponents/homepage/FloatingLegacy";
 import SectionField3D from "../components/three/SectionField3D";
 
 const PhotographyShowcase = lazy(() =>
@@ -46,11 +46,10 @@ export default function Homepage() {
 
   return (
     <>
-      {/* Hero — untouched */}
       <HeroSection />
 
-      {/* Heavy 3D Through the Lens */}
-      <PortfolioWall />
+      {/* New smooth 3D Floating Legacies */}
+      <FloatingLegacy />
 
       <Suspense fallback={<SectionSkeleton />}>
         <PhotographyShowcase />
