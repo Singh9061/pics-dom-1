@@ -10,19 +10,23 @@ export default function GalleryModal({
     hasMultiple
 }) {
     const [highResLoaded, setHighResLoaded] = useState(false);
+    const [loadError, setLoadError] = useState(false);
 
     useEffect(() => {
-        if (activeImage) setHighResLoaded(false);
+        setHighResLoaded(false);
+        setLoadError(false);
     }, [activeImage]);
 
     if (!activeImage) return null;
 
     const modalContent = (
         <div
-            className="fixed inset-0 z-9999 flex items-center justify-center bg-black/95 backdrop-blur-md p-4 sm:p-8 transition-opacity duration-300 ease-in-out"
+            className="fixed inset-0 z-9999 flex items-center justify-center bg-black/95 backdrop-blur-md p-4 sm:p-8"
             onClick={onClose}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Gallery lightbox"
         >
-            {/* Structural Close Action Layer */}
             <div className="absolute top-0 left-0 right-0 h-20 flex items-center justify-end px-6 z-10000 pointer-events-none">
                 <button
                     onClick={onClose}
@@ -33,7 +37,6 @@ export default function GalleryModal({
                 </button>
             </div>
 
-            {/* Previous Arrow Button */}
             {hasMultiple && (
                 <button
                     onClick={(e) => {
@@ -47,36 +50,41 @@ export default function GalleryModal({
                 </button>
             )}
 
-            {/* Target Image Frame Content Layer */}
             <div
-                className={`relative max-w-5xl max-h-[82vh] flex flex-col items-center justify-center transition-all duration-300 ease-out ${highResLoaded ? "scale-100 opacity-100" : "scale-[0.98] opacity-0"
-                    }`}
+                className="relative max-w-5xl max-h-[82vh] min-h-[200px] min-w-[200px] flex flex-col items-center justify-center"
                 onClick={(e) => e.stopPropagation()}
             >
-                <div className="relative flex items-center justify-center overflow-hidden">
-                    {/* Loading Indicator */}
-                    {!highResLoaded && (
-                        <div className="absolute inset-0 flex items-center justify-center z-10 bg-black/40">
-                            <div className="h-8 w-8 animate-spin rounded-full border-2 border-amber-400 border-t-transparent" />
-                        </div>
-                    )}
+                {!highResLoaded && !loadError && (
+                    <div className="absolute inset-0 flex items-center justify-center z-10">
+                        <div className="h-8 w-8 animate-spin rounded-full border-2 border-amber-400 border-t-transparent" />
+                    </div>
+                )}
 
+                {loadError ? (
+                    <p className="font-serif text-sm tracking-wide text-white/70">
+                        This frame could not be loaded.
+                    </p>
+                ) : (
                     <img
+                        key={activeImage.id || activeImage.img}
                         src={activeImage.img}
                         alt={activeImage.alt}
                         decoding="async"
                         onLoad={() => setHighResLoaded(true)}
-                        className="max-w-full max-h-[78vh] w-auto h-auto object-contain border border-white/10 shadow-2xl select-none"
+                        onError={() => setLoadError(true)}
+                        className={`max-w-full max-h-[78vh] w-auto h-auto object-contain border border-white/10 shadow-2xl select-none transition-opacity duration-300 ${
+                            highResLoaded ? "opacity-100" : "opacity-0"
+                        }`}
                     />
-                </div>
+                )}
 
-                {/* Caption Layer */}
-                <p className="mt-4 font-serif text-[10px] sm:text-xs uppercase tracking-[0.2em] text-white/70 text-center truncate w-full px-4">
-                    {activeImage.alt}
-                </p>
+                {activeImage.alt && (
+                    <p className="mt-4 font-serif text-[10px] sm:text-xs uppercase tracking-[0.2em] text-white/70 text-center truncate w-full px-4">
+                        {activeImage.alt}
+                    </p>
+                )}
             </div>
 
-            {/* Next Arrow Button */}
             {hasMultiple && (
                 <button
                     onClick={(e) => {

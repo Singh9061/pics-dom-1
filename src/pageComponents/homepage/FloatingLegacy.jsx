@@ -25,6 +25,7 @@ function PhotoFrame({ photo, index, total, activeIndex, setActiveIndex }) {
   const isNeighbor =
     Math.abs(activeIndex - index) === 1 ||
     Math.abs(activeIndex - index) === total - 1;
+  const scaleTarget = useMemo(() => new THREE.Vector3(1, 1, 1), []);
 
   useFrame((state) => {
     if (!group.current) return;
@@ -50,10 +51,8 @@ function PhotoFrame({ photo, index, total, activeIndex, setActiveIndex }) {
 
     // Scale
     const targetScale = isActive ? 1.35 : isNeighbor ? 0.95 : 0.78;
-    group.current.scale.lerp(
-      new THREE.Vector3(targetScale, targetScale, targetScale),
-      0.07
-    );
+    scaleTarget.set(targetScale, targetScale, targetScale);
+    group.current.scale.lerp(scaleTarget, 0.07);
 
     // Opacity
     if (matRef.current) {
@@ -133,9 +132,7 @@ function Dust({ count = 80 }) {
       <bufferGeometry>
         <bufferAttribute
           attach="attributes-position"
-          count={count}
-          array={positions}
-          itemSize={3}
+          args={[positions, 3]}
         />
       </bufferGeometry>
       <pointsMaterial
@@ -246,6 +243,12 @@ function Scene({ activeIndex, setActiveIndex }) {
 export default function FloatingLegacy() {
   const navigate = useNavigate();
   const [activeIndex, setActiveIndex] = useState(0);
+
+  useEffect(() => {
+    return () => {
+      document.body.style.cursor = "auto";
+    };
+  }, []);
 
   return (
     <section className="relative h-[100vh] min-h-[680px] w-full overflow-hidden bg-[#040302] select-none">

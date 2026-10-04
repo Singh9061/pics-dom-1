@@ -1,4 +1,4 @@
-import { lazy, Suspense, useState } from "react";
+import { lazy, Suspense, useState, useCallback } from "react";
 import { Route, Routes, BrowserRouter, useLocation } from "react-router-dom";
 import Base from "./components/Base";
 import ScrollToTop from "./components/ScrollToTop";
@@ -21,9 +21,9 @@ function AppRoutes() {
   const location = useLocation();
   const [showSplash, setShowSplash] = useState(() => location.pathname === "/");
 
-  const handleSplashFinish = () => {
+  const handleSplashFinish = useCallback(() => {
     setShowSplash(false);
-  };
+  }, []);
 
   return (
     <>

@@ -208,9 +208,7 @@ function Dust({ count = 120 }) {
       <bufferGeometry>
         <bufferAttribute
           attach="attributes-position"
-          count={count}
-          array={positions}
-          itemSize={3}
+          args={[positions, 3]}
         />
       </bufferGeometry>
       <pointsMaterial
@@ -268,7 +266,10 @@ export default function ThroughLensScene({
       if (t < 1) raf = requestAnimationFrame(tick);
     };
     raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
+    return () => {
+      cancelAnimationFrame(raf);
+      document.body.style.cursor = "auto";
+    };
   }, []);
 
   useEffect(() => {

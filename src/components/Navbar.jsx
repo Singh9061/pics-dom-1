@@ -8,6 +8,7 @@ const navLinks = [
   { name: "Gallery", path: "/gallery" },
   { name: "About", path: "/about" },
   { name: "Contact", path: "/contact" },
+  { name: "Reserve", path: "/reserve" },
 ];
 
 // Custom Camera Aperture SVG Icon to match the 'O' in DOM
@@ -178,7 +179,7 @@ export default function Navbar() {
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden items-center gap-10 lg:flex">
+          <div className="hidden items-center gap-6 xl:gap-10 lg:flex">
             {navLinks.map(({ name, path }, index) => {
               const isActive = location.pathname === path;
               return (

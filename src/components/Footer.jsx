@@ -12,6 +12,7 @@ const quickLinks = [
   { name: "The Gallery", path: "/gallery" },
   { name: "Our Story", path: "/about" },
   { name: "Atelier Contact", path: "/contact" },
+  { name: "Reserve Date", path: "/reserve" },
 ];
 
 const socialLinks = [
